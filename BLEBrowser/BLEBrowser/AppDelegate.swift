@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         window?.backgroundColor = .systemBackground
         
-        let navigatiorController = UINavigationController(rootViewController: ViewController())
+        let navigatiorController = UINavigationController(rootViewController: FirstViewController())
         window?.rootViewController = navigatiorController
         
         return true
