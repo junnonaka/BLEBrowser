@@ -10,11 +10,17 @@ import UIKit
 
 class FirstViewController:UIViewController{
     
-    lazy var menuButtonItem:UIBarButtonItem = {
-        let barButtonItem = UIBarButtonItem(title: "menu", style: .plain, target: self, action: #selector(menuButtonTapped))
-        barButtonItem.tintColor = .white
-        return barButtonItem
-    }()
+    
+    
+//    lazy var menuButtonItem:UIBarButtonItem = {
+//        //let barButtonItem = UIBarButtonItem(title: "menu", style: .plain, target: self, action: #selector(menuButtonTapped))
+//        let barButtonItem = UIBarButtonItem(title: "menu", image: nil, primaryAction: nil, menu: <#T##UIMenu?#>)
+//
+//        barButtonItem.tintColor = .white
+//        return barButtonItem
+//    }()
+    
+    var menuButtonItem = UIBarButtonItem()
     
     lazy var leftImageButtonItem:UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: UIImage(systemName: "antenna.radiowaves.left.and.right"), style: .plain, target: self, action: nil)
@@ -36,8 +42,8 @@ class FirstViewController:UIViewController{
 extension FirstViewController{
     
     func style(){
+        configureMenuButton()
         setNavigationBar()
-        
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -63,12 +69,12 @@ extension FirstViewController{
 }
 extension FirstViewController{
     
-    @objc func menuButtonTapped(){
-        
+    @objc func menuButtonTapped(_ sender:UIBarButtonItem){
+        //sender.
     }
     
     //NavigationBar
-    func setNavigationBar(){
+    private func setNavigationBar(){
         //UINavigationBarAppearanceをインスタンス化
         let appearance = UINavigationBarAppearance()
         //configureWithOpaqueBackgroundで以前までの設定を全てリセット
@@ -91,4 +97,31 @@ extension FirstViewController{
         navigationItem.leftBarButtonItem = leftImageButtonItem
     }
     
+    private func configureMenuButton(){
+        var actions = [UIMenuElement]()
+        // Filter
+        actions.append(UIAction(title: "Filter", image: nil, state: .off,
+                                handler: { (_) in
+        }))
+        // Sort
+        actions.append(UIAction(title: "Sort", image: nil, state: .off,
+                                handler: { (_) in
+        }))
+        //Bluetooth Settings
+        actions.append(UIAction(title: "Bluetooth Settings", image: nil, state: .off,
+                                handler: { (_) in
+            //let url = URL(string: "app-settings:")
+            let url = URL(string: UIApplication.openSettingsURLString)!
+            UIApplication.shared.open(url)
+        }))
+        
+        //Version information
+        actions.append(UIAction(title: "Version Information", image: nil, state: .off,
+                                handler: { (_) in
+        }))
+        // UIButtonにUIMenuを設定
+        let menu = UIMenu(title: "", options: .displayInline, children: actions)
+        menuButtonItem = UIBarButtonItem(title: "Menu", menu: menu)
+        menuButtonItem.tintColor = .white
+    }
 }
