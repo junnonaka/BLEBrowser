@@ -94,14 +94,13 @@ extension FirstViewController{
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
 
         title = "BLE Browser"
-        title = "test"
 
         
         
         //right bar item
         navigationItem.rightBarButtonItem = menuButtonItem
         //left bar item
-        //navigationItem.leftBarButtonItem = leftImageButtonItem
+        navigationItem.leftBarButtonItem = leftImageButtonItem
     }
     
     //MenuBottnにUIMenuをセット
@@ -199,6 +198,21 @@ extension FirstViewController{
         //Version information
         actions.append(UIAction(title: "Version Information", image: nil, state: .off,
                                 handler: { (_) in
+            
+            let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+
+            
+            let alert: UIAlertController = UIAlertController(title: "Version Information",
+                                                             message: "BLE Browser\n Version: \(version!)", preferredStyle:  .alert)
+            
+            let defaultAction: UIAlertAction = UIAlertAction(title: "OK", style: .default, handler:{
+                // ボタンが押された時の処理を書く（クロージャ実装）
+                (action: UIAlertAction!) -> Void in
+                print("OK")
+            })
+            alert.addAction(defaultAction)
+            self.present(alert, animated: true, completion: nil)
+
         }))
         // UIButtonにUIMenuを設定
         let menu = UIMenu(title: "", options: .displayInline, children: actions)
