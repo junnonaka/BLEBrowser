@@ -1,5 +1,5 @@
 //
-//  FilterCell.swift
+//  SortCell.swift
 //  BLEBrowser
 //
 //  Created by 野中淳 on 2022/05/15.
@@ -8,21 +8,20 @@
 import Foundation
 import UIKit
 
-//buttonTupをViewControllerに返す用
-protocol FilterCellDelegate:AnyObject {
-    func didTapButton(cell: FilterCell)
+//buttonTupを返す用
+protocol SortCelllDelegate:AnyObject {
+    func didTapButton(cell: SortCell)
 }
 
-class FilterCell : UITableViewCell{
+class SortCell : UITableViewCell{
     
-    weak var delegate:FilterCellDelegate?
+    weak var delegate:SortCelllDelegate?
     
     let label = UILabel()
-    let RSSIImageView = UIImageView()
     let radioButton = UIButton()
     let selectedImageView = UIImageView()
     
-    static let reuseID = "FilterCell"
+    static let reuseID = "SortCell"
     static let rowHeight:CGFloat = 44
 
     
@@ -37,18 +36,14 @@ class FilterCell : UITableViewCell{
     }
 }
 
-extension FilterCell{
+extension SortCell{
     private func setup(){
         contentView.addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .preferredFont(forTextStyle: .body)
         label.textColor = .label
-        label.text = "RSSI > -62"
+        label.text = "No sort"
         
-        contentView.addSubview(RSSIImageView)
-        RSSIImageView.image = UIImage.init(systemName: "dot.radiowaves.up.forward")
-        RSSIImageView.translatesAutoresizingMaskIntoConstraints = false
-        RSSIImageView.tintColor = .label
         
         contentView.addSubview(radioButton)
         radioButton.translatesAutoresizingMaskIntoConstraints = false
@@ -56,6 +51,7 @@ extension FilterCell{
         radioButton.imageView?.contentMode = .scaleAspectFit
         radioButton.contentHorizontalAlignment = .fill // オリジナルの画像サイズを超えて拡大（水平）
         radioButton.contentVerticalAlignment = .fill // オリジナルの画像サイズを超えて拡大(垂直)
+        
         radioButton.tintColor = .label
         radioButton.addTarget(self, action: #selector(didTupRadioButton), for: .primaryActionTriggered)
         
@@ -75,13 +71,7 @@ extension FilterCell{
             label.leadingAnchor.constraint(equalToSystemSpacingAfter: contentView.leadingAnchor, multiplier: 2),
             label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
-        
-        //ImageView
-        NSLayoutConstraint.activate([
-            RSSIImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            RSSIImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-        ])
-        
+                
         //radioButton
         NSLayoutConstraint.activate([
             contentView.trailingAnchor.constraint(equalToSystemSpacingAfter: radioButton.trailingAnchor, multiplier: 2),
@@ -99,7 +89,7 @@ extension FilterCell{
     }
 }
 
-extension FilterCell{
+extension SortCell{
     @objc func didTupRadioButton(sender:UIButton){
         delegate?.didTapButton(cell: self)
     }

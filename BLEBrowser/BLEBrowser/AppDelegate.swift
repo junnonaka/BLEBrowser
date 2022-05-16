@@ -21,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navigatiorController = UINavigationController(rootViewController: FirstViewController())
         window?.rootViewController = navigatiorController
         
-        //window?.rootViewController = tableViewTest()
         
         return true
         
