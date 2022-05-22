@@ -26,6 +26,9 @@ class FirstViewController:UIViewController{
     //Alert内に表示するtableView
     var filterAlertlCustumTableView  = UITableView()
     var sortAlertlCustumTableView  = UITableView()
+    
+    //Mainに表示するtableView
+    var bluetoothTableView = UITableView()
 
     var menuButtonItem = UIBarButtonItem()
     
@@ -59,18 +62,36 @@ extension FirstViewController{
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Welcome"
         label.font = UIFont.preferredFont(forTextStyle: .title1)
+        
+        bluetoothTableView.translatesAutoresizingMaskIntoConstraints = false
+        bluetoothTableView.backgroundColor = .systemGreen
+        //bluetoothTableView.delegate = self
+        bluetoothTableView.dataSource = self
+        bluetoothTableView.register(BluetoothCell.self, forCellReuseIdentifier: BluetoothCell.reuseID)
+
+        bluetoothTableView.tag = 2
     }
     
     func layout(){
-        stackView.addArrangedSubview(label)
-        
-        view.addSubview(stackView)
-        
+        //stackView
+//        stackView.addArrangedSubview(label)
+//        view.addSubview(stackView)
+//
+//        NSLayoutConstraint.activate([
+//            stackView.centerXAnchor.constraint(equalTo:view.centerXAnchor),
+//            stackView.centerYAnchor.constraint(equalTo:view.centerYAnchor)
+//        ])
+//
+        view.addSubview(bluetoothTableView)
+        //bluetoothTableView
         NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo:view.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo:view.centerYAnchor)
+            bluetoothTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            //Navigationにレイアウトをかける時はsafeAriaLayoutGuideらしい
+            bluetoothTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            bluetoothTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bluetoothTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
         ])
-        
     }
     
 }
@@ -224,7 +245,8 @@ extension FirstViewController:UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if tableView.tag == 0{
+        switch tableView.tag{
+        case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: FilterCell.reuseID, for: indexPath) as! FilterCell
             cell.selectionStyle = .none
             cell.tag = indexPath.row
@@ -233,7 +255,7 @@ extension FirstViewController:UITableViewDataSource{
             cell.RSSIImageView.alpha = filterCellSettings[indexPath.row].imageAlpha
             cell.selectedImageView.isHidden = !filterCellSettings[indexPath.row].selected
             return cell
-        }else{
+        case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: SortCell.reuseID, for: indexPath) as! SortCell
             cell.selectionStyle = .none
             cell.tag = indexPath.row
@@ -241,18 +263,37 @@ extension FirstViewController:UITableViewDataSource{
             cell.label.text = sortCellSettings[indexPath.row].sortType
             cell.selectedImageView.isHidden = !sortCellSettings[indexPath.row].selected
             return cell
+        case 2:
+            let cell = tableView.dequeueReusableCell(withIdentifier: BluetoothCell.reuseID, for: indexPath) as! BluetoothCell
+            return cell
+        default:
+            let cell = tableView.dequeueReusableCell(withIdentifier: SortCell.reuseID, for: indexPath) as! SortCell
+            return cell
         }
+        
         
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         var count = 0
-        if tableView.tag == 0{
+        switch tableView.tag{
+        case 0:
             count = filterCellSettings.count
-        }else{
+        case 1:
             count = sortCellSettings.count
+        case 2:
+            count = 2
+        default:
+            count = 2
         }
+        
+        
+//        if tableView.tag == 0{
+//            count = filterCellSettings.count
+//        }else{
+//            count = sortCellSettings.count
+//        }
         
         return count
     }
