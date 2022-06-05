@@ -1,29 +1,38 @@
 //
-//  BluetoothCell.swift
+//  BluetoothTableHeaderView.swift
 //  BLEBrowser
 //
-//  Created by 野中淳 on 2022/05/22.
+//  Created by 野中淳 on 2022/06/05.
 //
 
 import Foundation
 import UIKit
 
-class BluetoothCell : UITableViewCell{
+protocol BluetoothTableHeaderViewDelegate:AnyObject{
+    func BluetoothTableHeaderViewTap(_ header:BluetoothTableHeaderView,section:Int)
+    func connectImageViewTap(_ header:BluetoothTableHeaderView,section:Int)
+}
+
+class BluetoothTableHeaderView : UITableViewHeaderFooterView{
     
     let topview = UIView()
+    let rightView = UIView()
     let localNameLabel = UILabel()
     let uuidLabel = UILabel()
     let RSSIImageView = UIImageView()
     let RSSILabel = UILabel()
     let connectImageView = UIImageView()
-    //let dataTextView = UITextView()
     
-    static let reuseID = "BluetoothCell"
-    static let rowHeight:CGFloat = 44
-
+    static let reuseID = "BluetoothTableHeaderView"
+    static let viewHeight:CGFloat = 44
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    //section情報保持用
+    var section = 0
+    //tapされた時の処理を設定
+    weak var delegate:BluetoothTableHeaderViewDelegate?
+    
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
         setup()
         layout()
     }
@@ -31,14 +40,17 @@ class BluetoothCell : UITableViewCell{
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
 }
 
-extension BluetoothCell{
+extension BluetoothTableHeaderView{
     private func setup(){
-                
+        
+        topview.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapTopView)))
+        
         //topView
         topview.translatesAutoresizingMaskIntoConstraints = false
-        topview.backgroundColor = .orange
+        topview.backgroundColor = .systemBackground
         
         //localNameLabel
         localNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -58,6 +70,7 @@ extension BluetoothCell{
         connectImageView.tintColor = .systemBlue
         connectImageView.contentMode = .scaleAspectFit
         
+        
         //RSSIImageView
         RSSIImageView.translatesAutoresizingMaskIntoConstraints = false
         RSSIImageView.image = UIImage.init(systemName: "dot.radiowaves.up.forward")
@@ -70,54 +83,57 @@ extension BluetoothCell{
         RSSILabel.textColor = .label
         RSSILabel.text = "-62"
         
-        //dataTextView
-//        dataTextView.translatesAutoresizingMaskIntoConstraints = false
-//        dataTextView.font = UIFont.preferredFont(forTextStyle: .caption2, compatibleWith: nil)
-//        dataTextView.textColor = .label
-//        dataTextView.text.append(contentsOf: "LocalName: no data\n")
-//        dataTextView.text.append(contentsOf: "ManufactureData: no data\n")
-//        dataTextView.text.append(contentsOf: "Service Data: no data\n")
-//        dataTextView.text.append(contentsOf: "Service UUIDs: no data\n")
-//        dataTextView.text.append(contentsOf: "Overflow Service UUIDs: no data\n")
-//        dataTextView.text.append(contentsOf: "TxPower Level: no data\n")
-//        dataTextView.text.append(contentsOf: "Is connectable: no data\n")
-//        dataTextView.text.append(contentsOf: "Solicited Service UUIDs: no data\n")
-
-        //初期は決しておく
-        //dataTextView.isHidden = true
-        
-        backgroundColor = .clear
+        //rightView
+        rightView.translatesAutoresizingMaskIntoConstraints = false
+        rightView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapconnectImageView)))
         
     }
     
+    @objc func tapTopView(_ sender:Any){
+        //sectionTap時の処理
+        print("tap topview")
+        delegate?.BluetoothTableHeaderViewTap(self, section: section)
+    }
+    
+    @objc func tapconnectImageView(_ sender:Any){
+        //sectionTap時の処理
+        print("tap connected")
+        delegate?.connectImageViewTap(self, section: section)
+    }
+    
     private func layout(){
-        contentView.addSubview(topview)
-                
+        addSubview(topview)
+        addSubview(connectImageView)
+        addSubview(rightView)
+
+        
         topview.addSubview(localNameLabel)
         topview.addSubview(uuidLabel)
         topview.addSubview(connectImageView)
         topview.addSubview(RSSIImageView)
         topview.addSubview(RSSILabel)
-        
-        NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: topview.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: topview.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: topview.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: topview.bottomAnchor)
-        ])
-        
-        
+
         //topView
-        
         NSLayoutConstraint.activate([
+            topview.topAnchor.constraint(equalTo: topAnchor),
+            topview.leadingAnchor.constraint(equalTo: leadingAnchor),
+            topview.trailingAnchor.constraint(equalTo: connectImageView.leadingAnchor),
+            topview.bottomAnchor.constraint(equalTo: bottomAnchor),
             topview.heightAnchor.constraint(equalToConstant: 44)
         ])
+
+
+//        NSLayoutConstraint.activate([
+//            topview.heightAnchor.constraint(equalToConstant: 44)
+//        ])
+        
 
         //localNamelabel
         NSLayoutConstraint.activate([
             localNameLabel.leadingAnchor.constraint(equalToSystemSpacingAfter: topview.leadingAnchor, multiplier: 1),
             localNameLabel.topAnchor.constraint(equalToSystemSpacingBelow: topview.topAnchor, multiplier: 0)
         ])
+        
         
         //uuidLabel
         NSLayoutConstraint.activate([
@@ -127,16 +143,24 @@ extension BluetoothCell{
         
         //connectImageView
         NSLayoutConstraint.activate([
-            topview.trailingAnchor.constraint(equalToSystemSpacingAfter: connectImageView.trailingAnchor, multiplier: 1),
-            connectImageView.topAnchor.constraint(equalToSystemSpacingBelow: topview.topAnchor, multiplier: 0.2),
+            trailingAnchor.constraint(equalToSystemSpacingAfter: connectImageView.trailingAnchor, multiplier: 1),
+            connectImageView.topAnchor.constraint(equalToSystemSpacingBelow: topAnchor, multiplier: 0.2),
             connectImageView.widthAnchor.constraint(equalToConstant: 40),
             connectImageView.heightAnchor.constraint(equalToConstant: 40),
+
+        ])
+        //rightView
+        NSLayoutConstraint.activate([
+            trailingAnchor.constraint(equalToSystemSpacingAfter: rightView.trailingAnchor, multiplier: 1),
+            rightView.topAnchor.constraint(equalToSystemSpacingBelow: topAnchor, multiplier: 0.2),
+            rightView.widthAnchor.constraint(equalToConstant: 40),
+            rightView.heightAnchor.constraint(equalToConstant: 40),
 
         ])
         
         //RSSIImageView
         NSLayoutConstraint.activate([
-            RSSIImageView.topAnchor.constraint(equalTo: topview.topAnchor),
+            RSSIImageView.topAnchor.constraint(equalTo: topAnchor),
             connectImageView.leadingAnchor.constraint(equalToSystemSpacingAfter: RSSIImageView.trailingAnchor, multiplier: 1),
             RSSIImageView.widthAnchor.constraint(equalToConstant: 30),
             RSSIImageView.heightAnchor.constraint(equalToConstant: 30),
@@ -148,11 +172,6 @@ extension BluetoothCell{
             RSSILabel.topAnchor.constraint(equalToSystemSpacingBelow: RSSIImageView.bottomAnchor, multiplier: 0),
             connectImageView.leadingAnchor.constraint(equalToSystemSpacingAfter: RSSILabel.trailingAnchor, multiplier: 1),
         ])
-        
-        //dataTextView
-//        NSLayoutConstraint.activate([
-//            dataTextView.heightAnchor.constraint(equalToConstant: 100)
-//        ])
         
     }
 }

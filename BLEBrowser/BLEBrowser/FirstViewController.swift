@@ -29,8 +29,11 @@ class FirstViewController:UIViewController{
     
     //Mainに表示するtableView
     var bluetoothTableView = UITableView()
-
     var menuButtonItem = UIBarButtonItem()
+    var bluetoothDetailTableView = UITableView()
+    
+    // 開いているセクション保持
+    var expandSectionSet = Set<Int>()
     
     lazy var leftImageButtonItem:UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: UIImage(systemName: "antenna.radiowaves.left.and.right"), style: .plain, target: self, action: nil)
@@ -52,6 +55,9 @@ class FirstViewController:UIViewController{
 extension FirstViewController{
     
     func style(){
+        
+        bluetoothDetailTableView = UITableView(frame: view.frame, style: .grouped)
+        
         configureMenuButton()
         setNavigationBar()
         
@@ -64,40 +70,43 @@ extension FirstViewController{
         label.font = UIFont.preferredFont(forTextStyle: .title1)
         
         bluetoothTableView.translatesAutoresizingMaskIntoConstraints = false
-        bluetoothTableView.backgroundColor = .systemGreen
-        //bluetoothTableView.delegate = self
+        bluetoothTableView.backgroundColor = .systemBackground
+        bluetoothTableView.delegate = self
         bluetoothTableView.dataSource = self
         bluetoothTableView.register(BluetoothCell.self, forCellReuseIdentifier: BluetoothCell.reuseID)
 
         bluetoothTableView.tag = 2
+        
+
+        bluetoothDetailTableView.translatesAutoresizingMaskIntoConstraints = false
+        bluetoothDetailTableView.backgroundColor = .systemBackground
+        bluetoothDetailTableView.delegate = self
+        bluetoothDetailTableView.dataSource = self
+        bluetoothDetailTableView.register(BluetoothDetailCell.self, forCellReuseIdentifier: BluetoothDetailCell.reuseID)
+        bluetoothDetailTableView.register(BluetoothTableHeaderView.self, forHeaderFooterViewReuseIdentifier: BluetoothTableHeaderView.reuseID)
+        bluetoothDetailTableView.tag = 3
+        bluetoothDetailTableView.separatorColor = .clear
+        
+        
     }
     
     func layout(){
-        //stackView
-//        stackView.addArrangedSubview(label)
-//        view.addSubview(stackView)
-//
-//        NSLayoutConstraint.activate([
-//            stackView.centerXAnchor.constraint(equalTo:view.centerXAnchor),
-//            stackView.centerYAnchor.constraint(equalTo:view.centerYAnchor)
-//        ])
-//
-        view.addSubview(bluetoothTableView)
+
+        view.addSubview(bluetoothDetailTableView)
         //bluetoothTableView
         NSLayoutConstraint.activate([
-            bluetoothTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bluetoothDetailTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             //Navigationにレイアウトをかける時はsafeAriaLayoutGuideらしい
-            bluetoothTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            bluetoothTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bluetoothTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            bluetoothDetailTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            bluetoothDetailTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bluetoothDetailTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
         ])
     }
     
 }
 extension FirstViewController{
-    
-    
+
     //NavigationBar
     private func setNavigationBar(){
         //UINavigationBarAppearanceをインスタンス化
@@ -116,8 +125,6 @@ extension FirstViewController{
 
         title = "BLE Browser"
 
-        
-        
         //right bar item
         navigationItem.rightBarButtonItem = menuButtonItem
         //left bar item
@@ -206,7 +213,6 @@ extension FirstViewController{
             
             
         }))
-        
         //Bluetooth Settings
         //設定アプリを開く
         actions.append(UIAction(title: "Bluetooth Settings", image: nil, state: .off,
@@ -221,11 +227,9 @@ extension FirstViewController{
                                 handler: { (_) in
             
             let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-
-            
+            //alert表示
             let alert: UIAlertController = UIAlertController(title: "Version Information",
                                                              message: "BLE Browser\n Version: \(version!)", preferredStyle:  .alert)
-            
             let defaultAction: UIAlertAction = UIAlertAction(title: "OK", style: .default, handler:{
                 // ボタンが押された時の処理を書く（クロージャ実装）
                 (action: UIAlertAction!) -> Void in
@@ -244,7 +248,6 @@ extension FirstViewController{
 extension FirstViewController:UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         switch tableView.tag{
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: FilterCell.reuseID, for: indexPath) as! FilterCell
@@ -266,13 +269,15 @@ extension FirstViewController:UITableViewDataSource{
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: BluetoothCell.reuseID, for: indexPath) as! BluetoothCell
             return cell
+        case 3:
+            let cell = tableView.dequeueReusableCell(withIdentifier: BluetoothDetailCell.reuseID, for: indexPath) as! BluetoothDetailCell
+            return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: SortCell.reuseID, for: indexPath) as! SortCell
             return cell
         }
-        
-        
     }
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -284,22 +289,114 @@ extension FirstViewController:UITableViewDataSource{
             count = sortCellSettings.count
         case 2:
             count = 2
+        case 3:
+            count = expandSectionSet.contains(section) ? 1 : 0
         default:
             count = 2
         }
         
         
-//        if tableView.tag == 0{
-//            count = filterCellSettings.count
-//        }else{
-//            count = sortCellSettings.count
-//        }
-        
         return count
     }
 
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch tableView.tag{
+        case 0:
+            print("tap1")
+        case 1:
+            print("tap2")
+        case 2:
+            print("tap3")
+        case 3:
+            print("tap4")
+
+        default:
+            print("tap")
+            
+        }
+    }
+    
+    
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0.5
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        var view = UIView()
+        view.backgroundColor = .label
+        return view
+    }
+    
+    
     
 }
+
+extension FirstViewController:UITableViewDelegate{
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        var height = 0.0
+        switch tableView.tag{
+        case 0:
+            height = FilterCell.rowHeight
+        case 1:
+            height = SortCell.rowHeight
+        case 2:
+            height = BluetoothCell.rowHeight
+        case 3:
+            height = BluetoothDetailCell.rowHeight
+
+        default:
+            height = 44
+        }
+        return height
+    }
+    
+    
+    // UITableViewDelegate
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        var headerview:UIView? = nil
+        switch tableView.tag{
+        case 0:
+            print("tap1")
+        case 1:
+            print("tap2")
+        case 2:
+            print("tap3")
+        case 3:
+            var view = tableView.dequeueReusableHeaderFooterView(withIdentifier: BluetoothTableHeaderView.reuseID) as! BluetoothTableHeaderView
+            view.section = section
+            view.delegate = self
+            headerview = view
+            print("tap4")
+
+        default:
+            print("tap")
+        }
+        
+        return headerview
+    }
+    
+
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        var num = 1
+        switch tableView.tag{
+        case 0:
+            print("1")
+        case 1:
+            print("2")
+        case 2:
+            print("3")
+        case 3:
+            num = 4
+        default:
+            print("tap")
+        }
+        
+        return num
+    }
+}
+
 extension FirstViewController:FilterCellDelegate{
     func didTapButton(cell: FilterCell) {
         print("did tup cell \(cell.tag)")
@@ -327,6 +424,26 @@ extension FirstViewController:SortCelllDelegate{
             }
         }
         sortAlertlCustumTableView.reloadData()
+    }
+    
+}
+extension FirstViewController:BluetoothTableHeaderViewDelegate{
+
+    //HeaderViewTap
+    func BluetoothTableHeaderViewTap(_ header: BluetoothTableHeaderView, section: Int) {
+        print("headerview tap section \(section)")
+        
+        if expandSectionSet.contains(section) {
+            expandSectionSet.remove(section)
+        } else {
+            expandSectionSet.insert(section)
+        }
+        // section reload
+        bluetoothDetailTableView.reloadSections([section], with: .automatic)
+    }
+    //ConnectImageViewTap
+    func connectImageViewTap(_ header: BluetoothTableHeaderView, section: Int) {
+        print("ImageViewTap section\(section)")
     }
     
 }
