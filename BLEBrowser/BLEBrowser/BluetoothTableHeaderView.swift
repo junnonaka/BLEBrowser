@@ -17,6 +17,8 @@ class BluetoothTableHeaderView : UITableViewHeaderFooterView{
     
     let topview = UIView()
     let rightView = UIView()
+    let rightBackgroundView = UIView()
+
     let localNameLabel = UILabel()
     let uuidLabel = UILabel()
     let RSSIImageView = UIImageView()
@@ -24,7 +26,7 @@ class BluetoothTableHeaderView : UITableViewHeaderFooterView{
     let connectImageView = UIImageView()
     
     static let reuseID = "BluetoothTableHeaderView"
-    static let viewHeight:CGFloat = 44
+    static let viewHeight:CGFloat = 55
     
     //section情報保持用
     var section = 0
@@ -50,25 +52,27 @@ extension BluetoothTableHeaderView{
         
         //topView
         topview.translatesAutoresizingMaskIntoConstraints = false
-        topview.backgroundColor = .systemBackground
+        topview.backgroundColor = .white
         
         //localNameLabel
         localNameLabel.translatesAutoresizingMaskIntoConstraints = false
         localNameLabel.font = UIFont.preferredFont(forTextStyle: .title2, compatibleWith: nil)
-        localNameLabel.textColor = .label
+        localNameLabel.textColor = .black
         localNameLabel.text = "846B2177E0BA22A8E9"
+        localNameLabel.adjustsFontSizeToFitWidth = true
         
         //uuidLabel
         uuidLabel.translatesAutoresizingMaskIntoConstraints = false
         uuidLabel.font = UIFont.preferredFont(forTextStyle: .caption2, compatibleWith: nil)
-        uuidLabel.textColor = .label
+        uuidLabel.textColor = .black
         uuidLabel.text = "UUID:A6FD966-1D40-FADB-8268-5B5C6F8F2868"
         
         //connectImageView
         connectImageView.translatesAutoresizingMaskIntoConstraints = false
         connectImageView.image = UIImage.init(systemName: "play.circle")
-        connectImageView.tintColor = .systemBlue
+        connectImageView.tintColor = .blue
         connectImageView.contentMode = .scaleAspectFit
+        
         
         
         //RSSIImageView
@@ -76,17 +80,20 @@ extension BluetoothTableHeaderView{
         RSSIImageView.image = UIImage.init(systemName: "dot.radiowaves.up.forward")
         RSSIImageView.tintColor = .black
         RSSIImageView.contentMode = .scaleAspectFit
+        RSSIImageView.backgroundColor = .white
 
         //RSSILabel
         RSSILabel.translatesAutoresizingMaskIntoConstraints = false
         RSSILabel.font = UIFont.preferredFont(forTextStyle: .caption2, compatibleWith: nil)
-        RSSILabel.textColor = .label
+        RSSILabel.textColor = .black
         RSSILabel.text = "-62"
         
         //rightView
         rightView.translatesAutoresizingMaskIntoConstraints = false
         rightView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapconnectImageView)))
         
+        rightBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+        rightBackgroundView.backgroundColor = .white
     }
     
     @objc func tapTopView(_ sender:Any){
@@ -102,6 +109,8 @@ extension BluetoothTableHeaderView{
     }
     
     private func layout(){
+        addSubview(rightBackgroundView)
+
         addSubview(topview)
         addSubview(connectImageView)
         addSubview(rightView)
@@ -119,19 +128,26 @@ extension BluetoothTableHeaderView{
             topview.leadingAnchor.constraint(equalTo: leadingAnchor),
             topview.trailingAnchor.constraint(equalTo: connectImageView.leadingAnchor),
             topview.bottomAnchor.constraint(equalTo: bottomAnchor),
-            topview.heightAnchor.constraint(equalToConstant: 44)
+            //heightAnchor.constraint(equalToConstant: 44)
+        ])
+        
+        //rightBackgroundView
+        NSLayoutConstraint.activate([
+            rightBackgroundView.topAnchor.constraint(equalTo: topAnchor),
+            rightBackgroundView.leadingAnchor.constraint(equalTo: topview.trailingAnchor),
+            rightBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            rightBackgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            //heightAnchor.constraint(equalToConstant: 44)
         ])
 
 
-//        NSLayoutConstraint.activate([
-//            topview.heightAnchor.constraint(equalToConstant: 44)
-//        ])
         
 
         //localNamelabel
         NSLayoutConstraint.activate([
             localNameLabel.leadingAnchor.constraint(equalToSystemSpacingAfter: topview.leadingAnchor, multiplier: 1),
-            localNameLabel.topAnchor.constraint(equalToSystemSpacingBelow: topview.topAnchor, multiplier: 0)
+            localNameLabel.topAnchor.constraint(equalToSystemSpacingBelow: topview.topAnchor, multiplier: 1),
+            RSSIImageView.trailingAnchor.constraint(equalToSystemSpacingAfter: localNameLabel.trailingAnchor, multiplier: 4)
         ])
         
         
@@ -144,9 +160,9 @@ extension BluetoothTableHeaderView{
         //connectImageView
         NSLayoutConstraint.activate([
             trailingAnchor.constraint(equalToSystemSpacingAfter: connectImageView.trailingAnchor, multiplier: 1),
-            connectImageView.topAnchor.constraint(equalToSystemSpacingBelow: topAnchor, multiplier: 0.2),
-            connectImageView.widthAnchor.constraint(equalToConstant: 40),
-            connectImageView.heightAnchor.constraint(equalToConstant: 40),
+            connectImageView.topAnchor.constraint(equalToSystemSpacingBelow: topAnchor, multiplier: 0.5),
+            connectImageView.widthAnchor.constraint(equalToConstant: 50),
+            connectImageView.heightAnchor.constraint(equalToConstant: 50),
 
         ])
         //rightView
@@ -160,7 +176,7 @@ extension BluetoothTableHeaderView{
         
         //RSSIImageView
         NSLayoutConstraint.activate([
-            RSSIImageView.topAnchor.constraint(equalTo: topAnchor),
+            RSSIImageView.topAnchor.constraint(equalToSystemSpacingBelow: topAnchor, multiplier: 1),
             connectImageView.leadingAnchor.constraint(equalToSystemSpacingAfter: RSSIImageView.trailingAnchor, multiplier: 1),
             RSSIImageView.widthAnchor.constraint(equalToConstant: 30),
             RSSIImageView.heightAnchor.constraint(equalToConstant: 30),

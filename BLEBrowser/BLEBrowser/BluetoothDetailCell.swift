@@ -14,6 +14,8 @@ class BluetoothDetailCell : UITableViewCell{
     static let reuseID = "BluetoothDetailCell"
     static let rowHeight:CGFloat = 120
 
+
+        
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -28,23 +30,15 @@ class BluetoothDetailCell : UITableViewCell{
 
 extension BluetoothDetailCell{
     private func setup(){
-                
         
-        //dataTextView
+                        
         dataTextView.translatesAutoresizingMaskIntoConstraints = false
         dataTextView.font = UIFont.preferredFont(forTextStyle: .caption2, compatibleWith: nil)
-        dataTextView.textColor = .label
-        dataTextView.backgroundColor = .quaternarySystemFill
-        //dataTextView.backgroundColor = .brown
+        dataTextView.textColor = .black
+        dataTextView.backgroundColor = .cellColor
+        
 
-        dataTextView.text.append(contentsOf: "LocalName: no data\n")
-        dataTextView.text.append(contentsOf: "ManufactureData: no data\n")
-        dataTextView.text.append(contentsOf: "Service Data: no data\n")
-        dataTextView.text.append(contentsOf: "Service UUIDs: no data\n")
-        dataTextView.text.append(contentsOf: "Overflow Service UUIDs: no data\n")
-        dataTextView.text.append(contentsOf: "TxPower Level: no data\n")
-        dataTextView.text.append(contentsOf: "Is connectable: no data\n")
-        dataTextView.text.append(contentsOf: "Solicited Service UUIDs: no data\n")
+        dataTextView.isScrollEnabled = false
         dataTextView.isSelectable = false
         //初期は決しておく
         //dataTextView.isHidden = true

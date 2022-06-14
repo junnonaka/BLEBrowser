@@ -1,0 +1,21 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'BLEBrowser' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for BLEBrowser
+  pod 'StatusAlert', '~> 1.1.1'
+  pod 'Charts'
+  pod 'FirebaseAnalytics'
+
+end
+
+post_install do | installer |
+  require 'fileutils'
+
+  FileUtils.cp_r('Pods/Target Support Files/Pods-BLEBrowser/Pods-BLEBrowser-acknowledgements.plist', 'BLEBrowser/Settings.bundle/Acknowledgements.plist', :remove_destination => true)
+
+end
+

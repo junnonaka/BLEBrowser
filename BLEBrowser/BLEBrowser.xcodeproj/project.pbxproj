@@ -7,7 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		019957DEEE57039B961FCB1D /* Pods_BLEBrowser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B16B5B1625AD547C31F1DD3 /* Pods_BLEBrowser.framework */; };
 		B7192025283A14110046A53F /* BluetoothCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7192024283A14110046A53F /* BluetoothCell.swift */; };
+		B726DB0028522D6000AD30E8 /* BluetoothService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B726DAFF28522D6000AD30E8 /* BluetoothService.swift */; };
+		B726DB022853712100AD30E8 /* BLEDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B726DB012853712100AD30E8 /* BLEDevice.swift */; };
+		B726DB062854D28400AD30E8 /* RSSIGrapheViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B726DB052854D28400AD30E8 /* RSSIGrapheViewController.swift */; };
+		B738259A285870D20031CD82 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B7382599285870D20031CD82 /* Settings.bundle */; };
+		B738259C285877410031CD82 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B738259B285877410031CD82 /* GoogleService-Info.plist */; };
 		B74A2247282D363B0021BD0B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74A2246282D363B0021BD0B /* AppDelegate.swift */; };
 		B74A224B282D363B0021BD0B /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74A224A282D363B0021BD0B /* FirstViewController.swift */; };
 		B74A2250282D363C0021BD0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B74A224F282D363C0021BD0B /* Assets.xcassets */; };
@@ -16,10 +22,19 @@
 		B74A22622830D3100021BD0B /* SortCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74A22612830D3100021BD0B /* SortCell.swift */; };
 		B79C2C7E284C7FB000EA29AB /* BluetoothDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79C2C7D284C7FB000EA29AB /* BluetoothDetailCell.swift */; };
 		B79C2C81284C89DD00EA29AB /* BluetoothTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79C2C80284C89DD00EA29AB /* BluetoothTableHeaderView.swift */; };
+		B7DA29152857456B0012330A /* UIColoerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7DA29142857456B0012330A /* UIColoerExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8B16B5B1625AD547C31F1DD3 /* Pods_BLEBrowser.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BLEBrowser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9BFF5A2648AEE98FEDF178A3 /* Pods-BLEBrowser.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BLEBrowser.debug.xcconfig"; path = "Target Support Files/Pods-BLEBrowser/Pods-BLEBrowser.debug.xcconfig"; sourceTree = "<group>"; };
+		B19180D4BB3CF6829B9A9FE8 /* Pods-BLEBrowser.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BLEBrowser.release.xcconfig"; path = "Target Support Files/Pods-BLEBrowser/Pods-BLEBrowser.release.xcconfig"; sourceTree = "<group>"; };
 		B7192024283A14110046A53F /* BluetoothCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothCell.swift; sourceTree = "<group>"; };
+		B726DAFF28522D6000AD30E8 /* BluetoothService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothService.swift; sourceTree = "<group>"; };
+		B726DB012853712100AD30E8 /* BLEDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEDevice.swift; sourceTree = "<group>"; };
+		B726DB052854D28400AD30E8 /* RSSIGrapheViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSSIGrapheViewController.swift; sourceTree = "<group>"; };
+		B7382599285870D20031CD82 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		B738259B285877410031CD82 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B74A2243282D363B0021BD0B /* BLEBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BLEBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B74A2246282D363B0021BD0B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B74A224A282D363B0021BD0B /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -30,6 +45,7 @@
 		B74A22612830D3100021BD0B /* SortCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortCell.swift; sourceTree = "<group>"; };
 		B79C2C7D284C7FB000EA29AB /* BluetoothDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDetailCell.swift; sourceTree = "<group>"; };
 		B79C2C80284C89DD00EA29AB /* BluetoothTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothTableHeaderView.swift; sourceTree = "<group>"; };
+		B7DA29142857456B0012330A /* UIColoerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColoerExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,17 +53,45 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				019957DEEE57039B961FCB1D /* Pods_BLEBrowser.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B08218A7BFD6D18D1A9DE27D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9BFF5A2648AEE98FEDF178A3 /* Pods-BLEBrowser.debug.xcconfig */,
+				B19180D4BB3CF6829B9A9FE8 /* Pods-BLEBrowser.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		B726DAFE28522D5500AD30E8 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				B726DAFF28522D6000AD30E8 /* BluetoothService.swift */,
+			);
+			name = Service;
+			sourceTree = "<group>";
+		};
+		B726DB032854D21400AD30E8 /* RSSIGraphe */ = {
+			isa = PBXGroup;
+			children = (
+				B726DB052854D28400AD30E8 /* RSSIGrapheViewController.swift */,
+			);
+			name = RSSIGraphe;
+			sourceTree = "<group>";
+		};
 		B74A223A282D363B0021BD0B = {
 			isa = PBXGroup;
 			children = (
 				B74A2245282D363B0021BD0B /* BLEBrowser */,
 				B74A2244282D363B0021BD0B /* Products */,
+				B08218A7BFD6D18D1A9DE27D /* Pods */,
+				ED31777E0A19C898951F8B34 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -62,8 +106,12 @@
 		B74A2245282D363B0021BD0B /* BLEBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				B7382599285870D20031CD82 /* Settings.bundle */,
+				B726DAFE28522D5500AD30E8 /* Service */,
+				B79C2C82284CEC0800EA29AB /* Model */,
 				B74A225A282D39F60021BD0B /* Files */,
 				B74A225B283097030021BD0B /* FirstViewController */,
+				B726DB032854D21400AD30E8 /* RSSIGraphe */,
 			);
 			path = BLEBrowser;
 			sourceTree = "<group>";
@@ -74,6 +122,7 @@
 				B74A2246282D363B0021BD0B /* AppDelegate.swift */,
 				B74A224F282D363C0021BD0B /* Assets.xcassets */,
 				B74A2254282D363C0021BD0B /* Info.plist */,
+				B738259B285877410031CD82 /* GoogleService-Info.plist */,
 				B74A2251282D363C0021BD0B /* LaunchScreen.storyboard */,
 			);
 			name = Files;
@@ -100,6 +149,23 @@
 			name = Cells;
 			sourceTree = "<group>";
 		};
+		B79C2C82284CEC0800EA29AB /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				B726DB012853712100AD30E8 /* BLEDevice.swift */,
+				B7DA29142857456B0012330A /* UIColoerExtension.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		ED31777E0A19C898951F8B34 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8B16B5B1625AD547C31F1DD3 /* Pods_BLEBrowser.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -107,9 +173,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B74A2257282D363C0021BD0B /* Build configuration list for PBXNativeTarget "BLEBrowser" */;
 			buildPhases = (
+				22BCDB79B687DA540C2DBDA9 /* [CP] Check Pods Manifest.lock */,
 				B74A223F282D363B0021BD0B /* Sources */,
 				B74A2240282D363B0021BD0B /* Frameworks */,
 				B74A2241282D363B0021BD0B /* Resources */,
+				D07D5E87FDC53460E9DEEBAC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -159,21 +227,69 @@
 			buildActionMask = 2147483647;
 			files = (
 				B74A2253282D363C0021BD0B /* LaunchScreen.storyboard in Resources */,
+				B738259C285877410031CD82 /* GoogleService-Info.plist in Resources */,
+				B738259A285870D20031CD82 /* Settings.bundle in Resources */,
 				B74A2250282D363C0021BD0B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		22BCDB79B687DA540C2DBDA9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BLEBrowser-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D07D5E87FDC53460E9DEEBAC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BLEBrowser/Pods-BLEBrowser-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BLEBrowser/Pods-BLEBrowser-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BLEBrowser/Pods-BLEBrowser-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		B74A223F282D363B0021BD0B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B726DB0028522D6000AD30E8 /* BluetoothService.swift in Sources */,
+				B726DB022853712100AD30E8 /* BLEDevice.swift in Sources */,
 				B74A22622830D3100021BD0B /* SortCell.swift in Sources */,
 				B74A224B282D363B0021BD0B /* FirstViewController.swift in Sources */,
 				B79C2C81284C89DD00EA29AB /* BluetoothTableHeaderView.swift in Sources */,
 				B74A225E283097BF0021BD0B /* FilterCell.swift in Sources */,
+				B726DB062854D28400AD30E8 /* RSSIGrapheViewController.swift in Sources */,
+				B7DA29152857456B0012330A /* UIColoerExtension.swift in Sources */,
 				B74A2247282D363B0021BD0B /* AppDelegate.swift in Sources */,
 				B7192025283A14110046A53F /* BluetoothCell.swift in Sources */,
 				B79C2C7E284C7FB000EA29AB /* BluetoothDetailCell.swift in Sources */,
@@ -310,6 +426,7 @@
 		};
 		B74A2258282D363C0021BD0B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9BFF5A2648AEE98FEDF178A3 /* Pods-BLEBrowser.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -318,26 +435,32 @@
 				DEVELOPMENT_TEAM = CA9WMZNZUR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BLEBrowser/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BLERSSIGraph;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "BLEBrowser use Bluetooth";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "BLEBrowser use Bluetooth";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "BLEBrower use Photo Library for only screenshot";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nonaka.BLEBrowser;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nonaka.BLERSSIGraphe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		B74A2259282D363C0021BD0B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B19180D4BB3CF6829B9A9FE8 /* Pods-BLEBrowser.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -346,21 +469,26 @@
 				DEVELOPMENT_TEAM = CA9WMZNZUR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BLEBrowser/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BLERSSIGraph;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "BLEBrowser use Bluetooth";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "BLEBrowser use Bluetooth";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "BLEBrower use Photo Library for only screenshot";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nonaka.BLEBrowser;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nonaka.BLERSSIGraphe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
