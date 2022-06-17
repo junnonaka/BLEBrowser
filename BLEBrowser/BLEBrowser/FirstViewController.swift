@@ -36,13 +36,13 @@ class FirstViewController:UIViewController{
     
     // 開いているセクション保持
     var expandSectionSet = Set<Int>()
-    
+    //Bluetoothオブジェクト
     var bluetoothService:BluetoothService!
     
     //グルグル
     var activityIndicatorView = UIActivityIndicatorView()
     
-    //タイマー宣言
+    //タイマー宣言:接続タイムアウト用1秒タイマー
     var connectTimeoutTimer01: Timer!
     
     lazy var leftImageButtonItem:UIBarButtonItem = {
@@ -87,8 +87,6 @@ class FirstViewController:UIViewController{
             return nil
         }
     }()
-    
-    //Haptic Feedbackの準備
     private let buttonFeedbackGenerator: Any? = {
         if #available(iOS 10.0, *) {
             let generator: UIImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
