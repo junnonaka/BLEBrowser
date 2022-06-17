@@ -44,10 +44,6 @@ class RSSIGrapheViewController:UIViewController{
     let guideLabel = UILabel()
     let bottomStackView = UIStackView()
     let graphBackground = EMTNeumorphicView()
-
-//    var startStopButton = UIButton(type: .system)
-//    var exportButton = UIButton(type: .system)
-//    var snapshotButton = UIButton()
     
     var startStopButton = EMTNeumorphicButton()
     var exportButton = EMTNeumorphicButton()
@@ -58,8 +54,6 @@ class RSSIGrapheViewController:UIViewController{
     
 
 
-    // 今回使用するサンプルデータ
-    let sampleData = [-88.0, -70.0, -40.0, -50.0, -55.0, -52.0, -58.0, -65.0, 81.0]
     var isChartOn:Bool = true
     var connectedBleDeviceNum = 0
     
@@ -78,12 +72,8 @@ class RSSIGrapheViewController:UIViewController{
         didSet{
             if isBleConnect{
                 isChartOn = true
-                //statusLabel.text = "Connected"
-                //disconnectButton.setTitle("disconnect", for: .normal)
             }else{
                 isChartOn = false
-                //statusLabel.text = "Disconnected"
-                //disconnectButton.setTitle("close", for: .normal)
                 startStopButton.setTitle("Reconnect", for: .normal)
                 startStopButton.setImage(UIImage(systemName:"goforward"), for: .normal)
                 guideLabel.text = BLE_DISCONNECTED
@@ -93,6 +83,28 @@ class RSSIGrapheViewController:UIViewController{
     
     weak var delegate:RSSIGrapheViewControllerDelegate?
 
+    
+    //Haptic Feedbackの準備
+    private let succcessfeedbackGenerator: Any? = {
+        if #available(iOS 10.0, *) {
+            let generator: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
+            generator.prepare()
+            return generator
+        } else {
+            return nil
+        }
+    }()
+    
+    //Haptic Feedbackの準備
+    private let buttonFeedbackGenerator: Any? = {
+        if #available(iOS 10.0, *) {
+            let generator: UIImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+            generator.prepare()
+            return generator
+        } else {
+            return nil
+        }
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -109,9 +121,6 @@ class RSSIGrapheViewController:UIViewController{
         setObserver()
         style()
         layout()
-        
-        //displayChart(data: sampleData)
-        //print("RSSIChart View DidLoad")
         startTimer()
         
         
@@ -164,9 +173,6 @@ class RSSIGrapheViewController:UIViewController{
         
         if isChartOn{
             nowRssi = bluetoothService.readRssi()
-            //nowRssiLabel.text = String(nowRssi!)
-            //print(nowRssiDatas)
-
             if chartCounter < 1{
                 chartCounter += 1
             }else{
@@ -175,13 +181,6 @@ class RSSIGrapheViewController:UIViewController{
                 
                 nowRssiDatas.append(Double(nowRssi!))
                 displayChart(data: nowRssiDatas)
-                //calcDistance()
-//                if rssiSettingOnOffSwitch.isOn == false{
-//                    if nowRssiDatas.count == timerOffsettime{
-//                        setRssiOffset()
-//                    }
-//                }
-
             }
         }
         
@@ -191,16 +190,8 @@ class RSSIGrapheViewController:UIViewController{
     
     
     func displayChart(data: [Double]) {
-        // グラフの範囲を指定する
-        //            chartView = LineChartView(frame: CGRect(x: 0, y: 200, width: view.frame.width, height: 400))
         // プロットデータ(y軸)を保持する配列
         var dataEntries = [ChartDataEntry]()
-        
-        //            for (xValue, yValue) in data.enumerated() {
-        //                let dataEntry = ChartDataEntry(x: Double(xValue), y: yValue)
-        //                dataEntries.append(dataEntry)
-        //            }
-        
         
         for i in 0...(data.count - 1) {
             let dataEntry = ChartDataEntry(x: Double(i) * 1.0, y: data[i])
@@ -227,16 +218,12 @@ class RSSIGrapheViewController:UIViewController{
         chartDataSet.fillFormatter = DefaultFillFormatter { _,_  -> CGFloat in
             return CGFloat(self.rssiChartView.leftAxis.axisMinimum)
         }
-        //chartDataSet.fillAlpha = 0.8
-        
-        //chartDataSet.drawFilledEnabled = true
         
         rssiChartView.data = LineChartData(dataSet: chartDataSet)
         
         // X軸(xAxis)
         rssiChartView.xAxis.labelPosition = .bottom // x軸ラベルをグラフの下に表示する
         rssiChartView.xAxis.labelTextColor = .white
-        
         
         // Y軸(leftAxis/rightAxis)
         rssiChartView.leftAxis.axisMaximum = -20 //y左軸最大値
@@ -249,61 +236,16 @@ class RSSIGrapheViewController:UIViewController{
         // その他の変更
         rssiChartView.highlightPerTapEnabled = true // プロットをタップして選択不可
         rssiChartView.legend.enabled = false // グラフ名（凡例）を非表示
-        rssiChartView.pinchZoomEnabled = false // ピンチズーム不可
-        rssiChartView.doubleTapToZoomEnabled = false // ダブルタップズーム不可
+        rssiChartView.pinchZoomEnabled = true // ピンチズーム可能
+        rssiChartView.doubleTapToZoomEnabled = true // ダブルタップズーム不可
+        
         rssiChartView.highlightPerTapEnabled = false
         rssiChartView.extraTopOffset = 20 // 上から20pxオフセットすることで上の方にある値(99.0)を表示する
         rssiChartView.noDataText = "Keep Waiting" //Noデータ時に表示する文字
         rssiChartView.chartDescription.text = "RSSI Chart"
         rssiChartView.chartDescription.textColor = .white
-        
-        
-        
-        
-        //chartView.animate(xAxisDuration: 2) // 2秒かけて左から右にグラフをアニメーションで表示する
-        
-        //view.addSubview(chartView)
     }
     
-//    func displayChart(data: [Double]) {
-//            // グラフの範囲を指定する
-//        //rssiChartView = LineChartView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 100))
-//
-//            // プロットデータ(y軸)を保持する配列
-//            var dataEntries = [ChartDataEntry]()
-//
-//            for (xValue, yValue) in data.enumerated() {
-//                let dataEntry = ChartDataEntry(x: Double(xValue), y: yValue)
-//                dataEntries.append(dataEntry)
-//            }
-//            // グラフにデータを適用
-//        chartDataSet = LineChartDataSet(entries: dataEntries, label: "SampleDataChart")
-//
-//            chartDataSet.lineWidth = 5.0 // グラフの線の太さを変更
-//            chartDataSet.mode = .cubicBezier // 滑らかなグラフの曲線にする
-//
-//        rssiChartView.data = LineChartData(dataSet: chartDataSet)
-//
-//            // X軸(xAxis)
-//        rssiChartView.xAxis.labelPosition = .bottom // x軸ラベルをグラフの下に表示する
-//
-//            // Y軸(leftAxis/rightAxis)
-//        rssiChartView.leftAxis.axisMaximum = 100 //y左軸最大値
-//        rssiChartView.leftAxis.axisMinimum = 0 //y左軸最小値
-//        rssiChartView.leftAxis.labelCount = 6 // y軸ラベルの数
-//        rssiChartView.rightAxis.enabled = false // 右側の縦軸ラベルを非表示
-//
-//            // その他の変更
-//        rssiChartView.highlightPerTapEnabled = false // プロットをタップして選択不可
-//        rssiChartView.legend.enabled = false // グラフ名（凡例）を非表示
-//        rssiChartView.pinchZoomEnabled = false // ピンチズーム不可
-//        rssiChartView.doubleTapToZoomEnabled = false // ダブルタップズーム不可
-//        rssiChartView.extraTopOffset = 20 // 上から20pxオフセットすることで上の方にある値(99.0)を表示する
-//
-//        rssiChartView.animate(xAxisDuration: 2) // 2秒かけて左から右にグラフをアニメーションで表示する
-//
-//            //view.addSubview(rssiChartView)
-//        }
     
 }
 
@@ -332,9 +274,6 @@ extension RSSIGrapheViewController{
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = .preferredFont(forTextStyle: .title2, compatibleWith: nil)
         titleLabel.text = (bluetoothService.connectPeripheral.name != nil) ? bluetoothService.connectPeripheral.name : "no name"
-//        if titleLabel.text!.count > 15 {
-//            titleLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: nil)
-//        }
         titleLabel.textColor = .white
         
         deviceNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -343,21 +282,12 @@ extension RSSIGrapheViewController{
         
         
         disconnectButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        //disconnectButton.setTitle("disconnect", for: .normal)
         disconnectButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         disconnectButton.tintColor = .white
-        //disconnectButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
         disconnectButton.backgroundColor =  UIColor.appColor
         disconnectButton.setTitleColor(UIColor.white, for: .normal)
         disconnectButton.addTarget(self, action: #selector(disconnectButtonTup), for: .primaryActionTriggered)
         
-        
-        
-        
-        
-        //statusLabel.translatesAutoresizingMaskIntoConstraints = false
-        //statusLabel.text = "Connected"
         
         startStopButton.translatesAutoresizingMaskIntoConstraints = false
         startStopButton.setImage(UIImage(systemName: "pause.circle"), for: .normal)
@@ -366,19 +296,13 @@ extension RSSIGrapheViewController{
         startStopButton.titleLabel?.adjustsFontSizeToFitWidth = true
         startStopButton.addTarget(self, action: #selector(startStopButtonTup), for: .primaryActionTriggered)
         startStopButton.setTitleColor(UIColor.white, for: .normal)
-//        startStopButton.imageView?.contentMode = .scaleAspectFit
-//        startStopButton.contentHorizontalAlignment = .fill // オリジナルの画像サイズを超えて拡大（水平）
-//        startStopButton.contentVerticalAlignment = .fill // オリジナルの画像サイズを超えて拡大(垂
-        
+
         exportButton.translatesAutoresizingMaskIntoConstraints = false
         exportButton.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
         exportButton.tintColor = .white
         exportButton.setTitle("Export", for: .normal)
         exportButton.addTarget(self, action: #selector(exportButtonTup), for: .primaryActionTriggered)
         exportButton.setTitleColor(UIColor.white, for: .normal)
-//        exportButton.imageView?.contentMode = .scaleAspectFit
-//        exportButton.contentHorizontalAlignment = .fill // オリジナルの画像サイズを超えて拡大（水平）
-//        exportButton.contentVerticalAlignment = .fill // オリジナルの画像サイズを超えて拡大(垂
         
         snapshotButton.translatesAutoresizingMaskIntoConstraints = false
         snapshotButton.setImage(UIImage(systemName: "camera"), for: .normal)
@@ -386,19 +310,13 @@ extension RSSIGrapheViewController{
         snapshotButton.tintColor = .white
         snapshotButton.addTarget(self, action: #selector(snapshotButtonTup), for: .primaryActionTriggered)
         snapshotButton.setTitleColor(UIColor.white, for: .normal)
-//        snapshotButton.imageView?.contentMode = .scaleAspectFit
-//        snapshotButton.contentHorizontalAlignment = .fill // オリジナルの画像サイズを超えて拡大（水平）
-//        snapshotButton.contentVerticalAlignment = .fill // オリジナルの画像サイズを超えて拡大(垂
-        
+
         bottomStackView.translatesAutoresizingMaskIntoConstraints = false
         bottomStackView.axis = .horizontal
         bottomStackView.spacing = 30
         bottomStackView.backgroundColor =  UIColor.appColor
         bottomStackView.distribution = .fillEqually
         
-//        startStopButton.backgroundColor =  UIColor.blu2eColor
-//        snapshotButton.backgroundColor = UIColor.blu2eColor
-//        exportButton.backgroundColor =  UIColor.blu2eColor
         disconnectButton.neumorphicLayer?.elementDepth = 2
         startStopButton.neumorphicLayer?.elementDepth = 2
         snapshotButton.neumorphicLayer?.elementDepth = 2
@@ -464,6 +382,10 @@ extension RSSIGrapheViewController{
     
     @objc func snapshotButtonTup(){
         
+        if #available(iOS 10.0, *), let generator = buttonFeedbackGenerator as? UIImpactFeedbackGenerator {
+            generator.impactOccurred()
+        }
+        
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             if PHPhotoLibrary.authorizationStatus() != .authorized{
                 // フォトライブラリへのアクセスが許可されていないため、アラートを表示する
@@ -493,6 +415,7 @@ extension RSSIGrapheViewController{
                     
                     //キャプチャ取得.変数screenshotにUIImageが保存されます
                     let layer = UIApplication.shared.keyWindow!.layer
+                    
                     let scale = UIScreen.main.scale
                     UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale);
                     
@@ -509,6 +432,11 @@ extension RSSIGrapheViewController{
     }
     
     @objc func exportButtonTup(){
+        
+        if #available(iOS 10.0, *), let generator = buttonFeedbackGenerator as? UIImpactFeedbackGenerator {
+            generator.impactOccurred()
+        }
+        
         let alertController = UIAlertController(title:"Save File Name", message:"Prease input csv file name", preferredStyle: UIAlertController.Style.alert)
         
         alertController.addTextField()
@@ -545,6 +473,10 @@ extension RSSIGrapheViewController{
     }
     
     @objc func startStopButtonTup(sender:UIButton){
+        if #available(iOS 10.0, *), let generator = buttonFeedbackGenerator as? UIImpactFeedbackGenerator {
+            generator.impactOccurred()
+        }
+        
         
         switch sender.titleLabel!.text {
         case "start":
@@ -570,7 +502,7 @@ extension RSSIGrapheViewController{
     //多次元配列からDocuments下にCSVファイルを作る
     func createFile(fileName : String, fileArrData : [Double]){
         
-        let dt = Date()
+        //let dt = Date()
         let dateFormatter = DateFormatter()
 
         // DateFormatter を使用して書式とロケールを指定する

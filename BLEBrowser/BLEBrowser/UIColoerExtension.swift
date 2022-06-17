@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 extension UIColor {
-    /// hotpink RGB:#FF69B4
+
     class var appColor: UIColor {
         return UIColor(named: "AppColor")!
     }

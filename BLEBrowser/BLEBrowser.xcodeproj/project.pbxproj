@@ -20,8 +20,6 @@
 		B74A2253282D363C0021BD0B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B74A2251282D363C0021BD0B /* LaunchScreen.storyboard */; };
 		B74A225E283097BF0021BD0B /* FilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74A225D283097BF0021BD0B /* FilterCell.swift */; };
 		B74A22622830D3100021BD0B /* SortCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74A22612830D3100021BD0B /* SortCell.swift */; };
-		B79C2C7E284C7FB000EA29AB /* BluetoothDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79C2C7D284C7FB000EA29AB /* BluetoothDetailCell.swift */; };
-		B79C2C81284C89DD00EA29AB /* BluetoothTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79C2C80284C89DD00EA29AB /* BluetoothTableHeaderView.swift */; };
 		B7DA29152857456B0012330A /* UIColoerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7DA29142857456B0012330A /* UIColoerExtension.swift */; };
 /* End PBXBuildFile section */
 
@@ -43,8 +41,6 @@
 		B74A2254282D363C0021BD0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B74A225D283097BF0021BD0B /* FilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCell.swift; sourceTree = "<group>"; };
 		B74A22612830D3100021BD0B /* SortCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortCell.swift; sourceTree = "<group>"; };
-		B79C2C7D284C7FB000EA29AB /* BluetoothDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDetailCell.swift; sourceTree = "<group>"; };
-		B79C2C80284C89DD00EA29AB /* BluetoothTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothTableHeaderView.swift; sourceTree = "<group>"; };
 		B7DA29142857456B0012330A /* UIColoerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColoerExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -143,8 +139,6 @@
 				B74A225D283097BF0021BD0B /* FilterCell.swift */,
 				B74A22612830D3100021BD0B /* SortCell.swift */,
 				B7192024283A14110046A53F /* BluetoothCell.swift */,
-				B79C2C7D284C7FB000EA29AB /* BluetoothDetailCell.swift */,
-				B79C2C80284C89DD00EA29AB /* BluetoothTableHeaderView.swift */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -286,13 +280,11 @@
 				B726DB022853712100AD30E8 /* BLEDevice.swift in Sources */,
 				B74A22622830D3100021BD0B /* SortCell.swift in Sources */,
 				B74A224B282D363B0021BD0B /* FirstViewController.swift in Sources */,
-				B79C2C81284C89DD00EA29AB /* BluetoothTableHeaderView.swift in Sources */,
 				B74A225E283097BF0021BD0B /* FilterCell.swift in Sources */,
 				B726DB062854D28400AD30E8 /* RSSIGrapheViewController.swift in Sources */,
 				B7DA29152857456B0012330A /* UIColoerExtension.swift in Sources */,
 				B74A2247282D363B0021BD0B /* AppDelegate.swift in Sources */,
 				B7192025283A14110046A53F /* BluetoothCell.swift in Sources */,
-				B79C2C7E284C7FB000EA29AB /* BluetoothDetailCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
