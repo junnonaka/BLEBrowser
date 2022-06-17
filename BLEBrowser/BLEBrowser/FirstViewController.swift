@@ -45,6 +45,8 @@ class FirstViewController:UIViewController{
     //タイマー宣言
     var connectTimeoutTimer01: Timer!
     
+    var testView = UIView()
+    
     lazy var leftImageButtonItem:UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: UIImage(systemName: "antenna.radiowaves.left.and.right"), style: .plain, target: self, action: #selector(leftbarButtonItemTup))
         barButtonItem.tintColor = .white
@@ -69,8 +71,13 @@ class FirstViewController:UIViewController{
     
     let refreshControl = UIRefreshControl()
 
+    //let scrollView = UIScrollView()
+    
+    var contentView = UIView()
     
     var isConnecting = false
+    
+    var cellHeight = BluetoothCell.rowHeight
     
     //Haptic Feedbackの準備
     private let feedbackGenerator: Any? = {
@@ -104,7 +111,7 @@ class FirstViewController:UIViewController{
         NotificationCenter.default.addObserver(self, selector: #selector(updateTableView),
                                                name: .notifyBlePeripheralCountUpdate, object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateSection),
+        NotificationCenter.default.addObserver(self, selector: #selector(updateRow),
                                                name: .notifyBlePeripheralUpdate, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(bleConnected),
@@ -122,7 +129,7 @@ class FirstViewController:UIViewController{
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         bluetoothService.bleDevices = nil
-        bluetoothDetailTableView.reloadData()
+        //bluetoothDetailTableView.reloadData()
         bluetoothService.startBluetoothScanTimer()
     }
     
@@ -143,10 +150,46 @@ class FirstViewController:UIViewController{
         }
     }
     
-    @objc func updateSection(notification: NSNotification?){
+    @objc func updateRow(notification: NSNotification?){
         let count = notification!.userInfo!["bleDeviceCount"]  as! Int
         //bluetoothDetailTableView.reloadSections([count], with: .automatic)
         
+        if let cell = bluetoothDetailTableView.cellForRow(at: IndexPath(row: count, section: 0)) as? BluetoothCell{
+            var alpha = 0.0
+            if Int(bluetoothService.bleDevices[count].rssi) > -40 {
+                alpha = 1.0
+            }else if Int(bluetoothService.bleDevices[count].rssi) > -60{
+                alpha = 0.6
+            }else if Int(bluetoothService.bleDevices[count].rssi) > -80{
+                alpha = 0.4
+            }else{
+                alpha = 0.2
+            }
+            cell.RSSIImageView.alpha = alpha
+            //headerView.RSSILabel.text = bluetoothService.bleDevices[count].rssi.stringValue
+            
+            if(bluetoothService.bleDevices[count].rssi.stringValue == "127"){
+                print("127")
+            }else{
+                cell.RSSILabel.text = bluetoothService.bleDevices[count].rssi.stringValue
+            }
+            
+            var isConnect = false
+            if let connectalbe = bluetoothService.bleDevices[count].advertisementData[CBAdvertisementDataIsConnectable] as? Int{
+                isConnect = connectalbe == 1 ? true : false
+                
+                if !isConnect{
+                    cell.connectImageView.image = UIImage(systemName: "clear")
+                    cell.connectImageView.tintColor = .redColor
+                }else{
+                    cell.connectImageView.image = UIImage(systemName: "play.circle")
+                    cell.connectImageView.tintColor = .blueColor
+                }
+                
+            }
+            
+        }
+            
         
         if let headerView = bluetoothDetailTableView.headerView(forSection: count) as? BluetoothTableHeaderView{
             var alpha = 0.0
@@ -209,8 +252,9 @@ extension FirstViewController{
     
     func style(){
         
+        //bluetoothDetailTableView = UITableView(frame: view.frame, style: .insetGrouped)
         bluetoothDetailTableView = UITableView(frame: view.frame, style: .grouped)
-        
+
         configureMenuButton()
         setNavigationBar()
         
@@ -232,15 +276,55 @@ extension FirstViewController{
         
         
         bluetoothDetailTableView.translatesAutoresizingMaskIntoConstraints = false
-        bluetoothDetailTableView.backgroundColor = .white
+        
+        //bluetoothDetailTableView.backgroundColor = .white
+        bluetoothDetailTableView.backgroundColor = .eagleColor
+
+        
         bluetoothDetailTableView.delegate = self
         bluetoothDetailTableView.dataSource = self
         bluetoothDetailTableView.register(BluetoothDetailCell.self, forCellReuseIdentifier: BluetoothDetailCell.reuseID)
         bluetoothDetailTableView.register(BluetoothTableHeaderView.self, forHeaderFooterViewReuseIdentifier: BluetoothTableHeaderView.reuseID)
+        bluetoothDetailTableView.register(BluetoothCell.self, forCellReuseIdentifier: BluetoothCell.reuseID)
+
         bluetoothDetailTableView.tag = 3
         bluetoothDetailTableView.separatorColor = .clear
         bluetoothDetailTableView.showsHorizontalScrollIndicator = true
         bluetoothDetailTableView.indicatorStyle = .black
+        
+        //bluetoothDetailTableView.estimatedRowHeight = bluetoothDetailTableView.rowHeight
+        bluetoothDetailTableView.automaticallyAdjustsScrollIndicatorInsets = false
+        
+//        bluetoothDetailTableView.rowHeight = UITableView.automaticDimension
+//        bluetoothDetailTableView.estimatedRowHeight = bluetoothDetailTableView.rowHeight
+        
+        bluetoothDetailTableView.rowHeight = UITableView.automaticDimension
+        bluetoothDetailTableView.estimatedRowHeight = 60
+        bluetoothDetailTableView.sectionHeaderHeight = UITableView.automaticDimension
+        bluetoothDetailTableView.estimatedSectionHeaderHeight = 60
+        bluetoothDetailTableView.isScrollEnabled = true
+        
+        
+        //bluetoothDetailTableView.bounds = CGRect(x: 0, y: 0, width: view.bounds.width, height: 1500)
+        
+        
+        
+//        scrollView.translatesAutoresizingMaskIntoConstraints = false
+//        scrollView.backgroundColor = .blue
+//        scrollView.isScrollEnabled = true
+//
+//        scrollView.contentSize = CGSize(width: view.bounds.width, height: 10000)
+        
+        //scrollView.contentOffset = CGPoint(x: 0, y: 0 )
+
+    
+        
+//        testView.translatesAutoresizingMaskIntoConstraints = false
+//        testView.bounds = CGRect(x: 0, y: 0, width: 5000, height: 5000)
+//        testView.backgroundColor = .red
+        
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.backgroundColor = .red
         
         setupRefreshControl()
         
@@ -269,12 +353,18 @@ extension FirstViewController{
     
     func layout(){
         
-        view.addSubview(bluetoothDetailTableView)
+        //view.addSubview(bluetoothDetailTableView)
         activityIndicatorView.center = view.center
         activityIndicatorView.style = .large
         activityIndicatorView.color = .blueColor
-        
+        view.addSubview(bluetoothDetailTableView)
         view.addSubview(activityIndicatorView)
+        //view.addSubview(scrollView)
+        //scrollView.addSubview(bluetoothDetailTableView)
+        
+        //scrollView.addSubview(testView)
+        
+      
         //bluetoothTableView
         NSLayoutConstraint.activate([
             bluetoothDetailTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -282,8 +372,54 @@ extension FirstViewController{
             bluetoothDetailTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             bluetoothDetailTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bluetoothDetailTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            //bluetoothDetailTableView.heightAnchor.constraint(equalToConstant: 10000),
+//            bluetoothDetailTableView.heightAnchor.constraint(equalToConstant: 10000),
+
+//            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            //Navigationにレイアウトをかける時はsafeAriaLayoutGuideらしい
+//            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+//            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+//            //scrollView.heightAnchor.constraint(equalToConstant: 10000),
+
+
+
         ])
+        
+        
+        NSLayoutConstraint.activate([
+            //bluetoothDetailTableView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            //Navigationにレイアウトをかける時はsafeAriaLayoutGuideらしい
+            //bluetoothDetailTableView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+//            bluetoothDetailTableView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+//            bluetoothDetailTableView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+//            bluetoothDetailTableView.heightAnchor.constraint(equalToConstant: 10000),
+        ])
+        
+//        NSLayoutConstraint.activate([
+//            bluetoothDetailTableView.leadingAnchor.constraint(equalTo: bluetoothDetailTableView.superview!.leadingAnchor),
+//            //Navigationにレイアウトをかける時はsafeAriaLayoutGuideらしい
+//            bluetoothDetailTableView.topAnchor.constraint(equalTo: bluetoothDetailTableView.superview!.topAnchor),
+//            bluetoothDetailTableView.trailingAnchor.constraint(equalTo: bluetoothDetailTableView.superview!.trailingAnchor),
+//            //bluetoothDetailTableView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+//            bluetoothDetailTableView.heightAnchor.constraint(equalToConstant: 10000),
+//        ])
+//        NSLayoutConstraint.activate([
+//
+//            bluetoothDetailTableView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+//            //Navigationにレイアウトをかける時はsafeAriaLayoutGuideらしい
+//            bluetoothDetailTableView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+//            bluetoothDetailTableView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+//            bluetoothDetailTableView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+//
+//            //bluetoothDetailTableView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor),
+//            //bluetoothDetailTableView.heightAnchor.constraint(equalToConstant: bluetoothDetailTableView.bounds.height),
+//            bluetoothDetailTableView.heightAnchor.constraint(equalTo: bluetoothDetailTableView.heightAnchor),
+//
+//            bluetoothDetailTableView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
+//        ])
+        
+        
+        
     }
     
 }
@@ -465,16 +601,195 @@ extension FirstViewController:UITableViewDataSource{
             return cell
         case 3:
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: BluetoothDetailCell.reuseID, for: indexPath) as! BluetoothDetailCell
+//            let cell = tableView.dequeueReusableCell(withIdentifier: BluetoothDetailCell.reuseID, for: indexPath) as! BluetoothDetailCell
+//
+//
+//            if let name = bluetoothService.bleDevices[indexPath.section].peripheral.name {
+//                localName = name
+//            }else{
+//                localName = "no data"
+//            }
+//            print("section \(indexPath.section)")
+//            if let manufacture = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data{
+//                var manufactureSpecificInt:[UInt8] = [UInt8()]
+//                var manufactureSpecificString:[String] = [String()]
+//                var manuString:String = ""
+//                for i in 0 ..< manufacture.count {
+//                    manufactureSpecificInt.append(manufacture[i].byteSwapped)
+//                    manufactureSpecificString.append(String(manufactureSpecificInt[i], radix: 16))
+//                    manuString.append(manufactureSpecificString[i])
+//                }
+//
+//                manufactureData = manuString
+//            }else{
+//                manufactureData = "no data"
+//            }
+//
+//            if let connectalbe = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataIsConnectable] as? Int{
+//                isConnectable = connectalbe == 1 ? "Yes" : "No"
+//
+//            }else{
+//                isConnectable = "no data"
+//            }
+//
+//            if let txPower = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int{
+//                txPowerLevel = txPower.description
+//
+//            }else{
+//                txPowerLevel = "no data"
+//            }
+//
+//            //servicedata
+//            if let serviceDataRow = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataServiceDataKey] as? Data{
+//                var serviceDataInt:[UInt8] = [UInt8()]
+//                var serviceDataString:[String] = [String()]
+//                var serviceString:String = ""
+//                for i in 0 ..< serviceDataRow.count {
+//                    serviceDataInt.append(serviceDataRow[i].byteSwapped)
+//                    serviceDataString.append(String(serviceDataInt[i], radix: 16))
+//                    serviceString.append(serviceDataString[i])
+//                }
+//
+//                serviceData = serviceString
+//            }else{
+//                serviceData = "no data"
+//            }
+//
+//            if bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataServiceUUIDsKey] != nil{
+//                print(bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataServiceUUIDsKey])
+//            }
+//
+//            //servicUUIDS
+//            if let serviceUUIDRow = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataServiceUUIDsKey] as? NSArray {
+//                if serviceUUIDRow.count > 0{
+//                    print("serviceUUID",serviceUUIDRow)
+//                    print("serviceUUID",serviceUUIDRow[0])
+//
+//                    //型を明示してキャストする必要がある
+//                    if let array2 : [CBUUID] = serviceUUIDRow as? [CBUUID] { // オプショナル構文
+//                        print("here")
+//                        serviceUUIDs = ""
+//                        for obj in array2{
+//                            serviceUUIDs.append(obj.uuidString)
+//                        }
+//                    }
+//                }
+//            }else{
+//                serviceUUIDs = "no data"
+//            }
+//
+//            //overFrowservicUUIDS
+//            if let overFrowserviceUUIDRow = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey] as? NSArray {
+//                if overFrowserviceUUIDRow.count > 0{
+//                print("serviceUUID",overFrowserviceUUIDRow)
+//                print("serviceUUID",overFrowserviceUUIDRow[0])
+//
+//                //型を明示してキャストする必要がある
+//                if let array2 : [CBUUID] = overFrowserviceUUIDRow as? [CBUUID] { // オプショナル構文
+//                    print("here")
+//                    overflowServiceUUIDs = ""
+//                    for obj in array2{
+//                        overflowServiceUUIDs.append(obj.uuidString)
+//                    }
+//                }
+//                }
+//            }else{
+//                overflowServiceUUIDs = "no data"
+//            }
+//
+//            //solicitedServiceUUIDs
+//            if let solicitedserviceUUIDRow = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataSolicitedServiceUUIDsKey] as? NSArray {
+//                if solicitedserviceUUIDRow.count > 0{
+//                print("serviceUUID",solicitedserviceUUIDRow)
+//                print("serviceUUID",solicitedserviceUUIDRow[0])
+//
+//                //型を明示してキャストする必要がある
+//                if let array2 : [CBUUID] = solicitedserviceUUIDRow as? [CBUUID] { // オプショナル構文
+//                    print("here")
+//                    solicitedServiceUUIDs = ""
+//                    for obj in array2{
+//                        solicitedServiceUUIDs.append(obj.uuidString)
+//                    }
+//                }
+//                }
+//            }else{
+//                solicitedServiceUUIDs = "no data"
+//            }
+//
+//            cell.dataTextView.text = ""
+//            cell.dataTextView.text.append(contentsOf: "LocalName: \(localName)\n")//OK
+//            cell.dataTextView.text.append(contentsOf: "ManufactureData: \(manufactureData)\n")//OK
+//            cell.dataTextView.text.append(contentsOf: "Service Data: \(serviceData)\n")
+//            cell.dataTextView.text.append(contentsOf: "Service UUIDs: \(serviceUUIDs)\n")//OK
+//            cell.dataTextView.text.append(contentsOf: "Overflow Service UUIDs: \(overflowServiceUUIDs)\n")//ok
+//            cell.dataTextView.text.append(contentsOf: "TxPower Level: \(txPowerLevel)\n")//ok
+//            cell.dataTextView.text.append(contentsOf: "Is connectable: \(isConnectable)\n")//ok
+//            cell.dataTextView.text.append(contentsOf: "Solicited Service UUIDs: \(solicitedServiceUUIDs)\n")//ok
+//
+//            bluetoothService.bleDevices[indexPath.section].isReaded = true
+//
+//            localName = "no data"
             
+            let cell = tableView.dequeueReusableCell(withIdentifier: BluetoothCell.reuseID, for: indexPath) as! BluetoothCell
             
-            if let name = bluetoothService.bleDevices[indexPath.section].peripheral.name {
+            cell.row = indexPath.row
+            cell.delegate = self
+            cell.selectionStyle = .none
+            
+            if expandSectionSet.contains(indexPath.row) {
+                    cell.dataTextView.isHidden = false
+                
+                //cell.dataTextView.isHidden = false
+                
+            }else{
+                    cell.dataTextView.isHidden = true
+                
+
+            }
+            
+            //header
+            //view.section = section
+            //view.delegate = self
+            //var headerview = view
+            cell.localNameLabel.text = (bluetoothService.bleDevices[indexPath.row].peripheral.name != nil) ? bluetoothService.bleDevices[indexPath.row].peripheral.name : "no name"
+            cell.uuidLabel.text = bluetoothService.bleDevices[indexPath.row].peripheral.identifier.uuidString
+            cell.RSSILabel.text = bluetoothService.bleDevices[indexPath.row].rssi.stringValue
+            var alpha = 0.0
+            if Int(bluetoothService.bleDevices[indexPath.row].rssi) > -40 {
+                alpha = 1.0
+            }else if Int(bluetoothService.bleDevices[indexPath.row].rssi) > -60{
+                alpha = 0.6
+            }else if Int(bluetoothService.bleDevices[indexPath.row].rssi) > -80{
+                alpha = 0.4
+            }else{
+                alpha = 0.2
+            }
+            cell.RSSIImageView.alpha = alpha
+            var isConnect = false
+            if let connectalbe = bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataIsConnectable] as? Int{
+                isConnect = connectalbe == 1 ? true : false
+                
+                if !isConnect{
+                    cell.NumoButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+                    cell.connectImageView.image = UIImage(systemName: "clear")
+                    cell.NumoButton.tintColor = .redColor
+                    
+                }else{
+                    cell.NumoButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+                    cell.connectImageView.image = UIImage(systemName: "play.circle")
+                    cell.NumoButton.tintColor = .blueColor
+                    
+                }
+            }
+            
+            //ここからDetail
+            
+            if let name = bluetoothService.bleDevices[indexPath.row].peripheral.name {
                 localName = name
             }else{
                 localName = "no data"
             }
-            print("section \(indexPath.section)")
-            if let manufacture = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data{
+            if let manufacture = bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data{
                 var manufactureSpecificInt:[UInt8] = [UInt8()]
                 var manufactureSpecificString:[String] = [String()]
                 var manuString:String = ""
@@ -489,14 +804,14 @@ extension FirstViewController:UITableViewDataSource{
                 manufactureData = "no data"
             }
             
-            if let connectalbe = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataIsConnectable] as? Int{
+            if let connectalbe = bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataIsConnectable] as? Int{
                 isConnectable = connectalbe == 1 ? "Yes" : "No"
                 
             }else{
                 isConnectable = "no data"
             }
             
-            if let txPower = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int{
+            if let txPower = bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataTxPowerLevelKey] as? Int{
                 txPowerLevel = txPower.description
                 
             }else{
@@ -504,7 +819,7 @@ extension FirstViewController:UITableViewDataSource{
             }
             
             //servicedata
-            if let serviceDataRow = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataServiceDataKey] as? Data{
+            if let serviceDataRow = bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataServiceDataKey] as? Data{
                 var serviceDataInt:[UInt8] = [UInt8()]
                 var serviceDataString:[String] = [String()]
                 var serviceString:String = ""
@@ -519,12 +834,12 @@ extension FirstViewController:UITableViewDataSource{
                 serviceData = "no data"
             }
             
-            if bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataServiceUUIDsKey] != nil{
-                print(bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataServiceUUIDsKey])
+            if bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataServiceUUIDsKey] != nil{
+                print(bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataServiceUUIDsKey])
             }
             
             //servicUUIDS
-            if let serviceUUIDRow = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataServiceUUIDsKey] as? NSArray {
+            if let serviceUUIDRow = bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataServiceUUIDsKey] as? NSArray {
                 if serviceUUIDRow.count > 0{
                     print("serviceUUID",serviceUUIDRow)
                     print("serviceUUID",serviceUUIDRow[0])
@@ -543,38 +858,38 @@ extension FirstViewController:UITableViewDataSource{
             }
             
             //overFrowservicUUIDS
-            if let overFrowserviceUUIDRow = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey] as? NSArray {
+            if let overFrowserviceUUIDRow = bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey] as? NSArray {
                 if overFrowserviceUUIDRow.count > 0{
-                print("serviceUUID",overFrowserviceUUIDRow)
-                print("serviceUUID",overFrowserviceUUIDRow[0])
-                
-                //型を明示してキャストする必要がある
-                if let array2 : [CBUUID] = overFrowserviceUUIDRow as? [CBUUID] { // オプショナル構文
-                    print("here")
-                    overflowServiceUUIDs = ""
-                    for obj in array2{
-                        overflowServiceUUIDs.append(obj.uuidString)
+                    print("serviceUUID",overFrowserviceUUIDRow)
+                    print("serviceUUID",overFrowserviceUUIDRow[0])
+                    
+                    //型を明示してキャストする必要がある
+                    if let array2 : [CBUUID] = overFrowserviceUUIDRow as? [CBUUID] { // オプショナル構文
+                        print("here")
+                        overflowServiceUUIDs = ""
+                        for obj in array2{
+                            overflowServiceUUIDs.append(obj.uuidString)
+                        }
                     }
-                }
                 }
             }else{
                 overflowServiceUUIDs = "no data"
             }
             
             //solicitedServiceUUIDs
-            if let solicitedserviceUUIDRow = bluetoothService.bleDevices[indexPath.section].advertisementData[CBAdvertisementDataSolicitedServiceUUIDsKey] as? NSArray {
+            if let solicitedserviceUUIDRow = bluetoothService.bleDevices[indexPath.row].advertisementData[CBAdvertisementDataSolicitedServiceUUIDsKey] as? NSArray {
                 if solicitedserviceUUIDRow.count > 0{
-                print("serviceUUID",solicitedserviceUUIDRow)
-                print("serviceUUID",solicitedserviceUUIDRow[0])
-                
-                //型を明示してキャストする必要がある
-                if let array2 : [CBUUID] = solicitedserviceUUIDRow as? [CBUUID] { // オプショナル構文
-                    print("here")
-                    solicitedServiceUUIDs = ""
-                    for obj in array2{
-                        solicitedServiceUUIDs.append(obj.uuidString)
+                    print("serviceUUID",solicitedserviceUUIDRow)
+                    print("serviceUUID",solicitedserviceUUIDRow[0])
+                    
+                    //型を明示してキャストする必要がある
+                    if let array2 : [CBUUID] = solicitedserviceUUIDRow as? [CBUUID] { // オプショナル構文
+                        print("here")
+                        solicitedServiceUUIDs = ""
+                        for obj in array2{
+                            solicitedServiceUUIDs.append(obj.uuidString)
+                        }
                     }
-                }
                 }
             }else{
                 solicitedServiceUUIDs = "no data"
@@ -590,9 +905,12 @@ extension FirstViewController:UITableViewDataSource{
             cell.dataTextView.text.append(contentsOf: "Is connectable: \(isConnectable)\n")//ok
             cell.dataTextView.text.append(contentsOf: "Solicited Service UUIDs: \(solicitedServiceUUIDs)\n")//ok
             
-            bluetoothService.bleDevices[indexPath.section].isReaded = true
+            bluetoothService.bleDevices[indexPath.row].isReaded = true
             
-            localName = "no data"
+            
+            
+            
+            
             
             
             
@@ -617,8 +935,9 @@ extension FirstViewController:UITableViewDataSource{
         case 2:
             count = 2
         case 3:
-            count = expandSectionSet.contains(section) ? 1 : 0
+            //count = expandSectionSet.contains(section) ? 1 : 0
             
+            count = (bluetoothService.bleDevices != nil) ? bluetoothService.bleDevices.count : 0
         default:
             count = 2
         }
@@ -637,6 +956,30 @@ extension FirstViewController:UITableViewDataSource{
             print("tap3")
         case 3:
             print("tap4")
+            
+            
+            if expandSectionSet.contains(indexPath.row) {
+                expandSectionSet.remove(indexPath.row)
+                bluetoothDetailTableView.beginUpdates()
+                //cellHeight = BluetoothCell.rowHeight
+                
+                //bluetoothDetailTableView.reloadRows(at: [indexPath], with: .automatic)
+                bluetoothDetailTableView.endUpdates()
+                
+            } else {
+                expandSectionSet.insert(indexPath.row)
+                bluetoothDetailTableView.beginUpdates()
+                //bluetoothDetailTableView.reloadRows(at: [indexPath], with: .automatic)
+                bluetoothDetailTableView.endUpdates()
+            }
+            //bluetoothDetailTableView.reloadRows(at: [indexPath], with: .automatic)
+            
+            
+            
+            //tableView.beginUpdates()
+            //cellHeight = (cellHeight == BluetoothCell.rowHeight ? 100.0 : BluetoothCell.rowHeight)
+
+            //tableView.endUpdates()
             
         default:
             print("tap")
@@ -660,7 +1003,8 @@ extension FirstViewController:UITableViewDataSource{
         case 2:
             height = 0
         case 3:
-            height = BluetoothTableHeaderView.viewHeight
+            //height = BluetoothTableHeaderView.viewHeight
+            height = 0
         default:
             height = 44
         }
@@ -688,10 +1032,48 @@ extension FirstViewController:UITableViewDelegate{
         case 2:
             height = BluetoothCell.rowHeight
         case 3:
-            height = BluetoothDetailCell.rowHeight
-            height = UITableView.automaticDimension
-            //tableView.estimatedRowHeight = 10000
-            height = tableView.estimatedRowHeight
+//            height = BluetoothDetailCell.rowHeight
+//            height = UITableView.automaticDimension
+//            tableView.estimatedRowHeight = BluetoothDetailCell.rowHeight
+//            tableView.rowHeight = BluetoothDetailCell.rowHeight
+            
+//            tableView.rowHeight = UITableView.automaticDimension
+//            tableView.estimatedRowHeight = 10000
+//            height = UITableView.automaticDimension
+            
+            
+            
+            tableView.rowHeight = UITableView.automaticDimension
+            tableView.estimatedRowHeight = 60
+            tableView.sectionHeaderHeight = UITableView.automaticDimension
+            tableView.estimatedSectionHeaderHeight = 60
+            
+            if expandSectionSet.contains(indexPath.row) {
+
+                height = BluetoothCell.allRowHeight
+                if let cell = tableView.cellForRow(at: indexPath) as? BluetoothCell{
+                    cell.dataTextView.isHidden = false
+                }
+
+                //cell.dataTextView.isHidden = false
+
+            }else{
+                //cell.dataTextView.isHidden = true
+                height = BluetoothCell.rowHeight
+                if let cell = tableView.cellForRow(at: indexPath) as? BluetoothCell{
+                    cell.dataTextView.isHidden = true
+                }
+
+
+            }
+            
+            //height = 300
+            
+//            tableView.rowHeight = UITableView.automaticDimension
+//            tableView.estimatedRowHeight = bluetoothDetailTableView.rowHeight
+            //height = cellHeight
+            
+            //height = tableView.estimatedRowHeight
             
         default:
             height = 44
@@ -742,6 +1124,8 @@ extension FirstViewController:UITableViewDelegate{
                     view.connectImageView.tintColor = .blueColor
                 }
             }
+            
+            headerview = nil
 
         default:
             headerview = nil
@@ -763,6 +1147,7 @@ extension FirstViewController:UITableViewDelegate{
         case 3:
             num = (bluetoothService.bleDevices != nil) ? bluetoothService.bleDevices.count : 0
             
+            num = 1
             
         default:
             print("tap")
@@ -808,26 +1193,45 @@ extension FirstViewController:BluetoothTableHeaderViewDelegate{
     func BluetoothTableHeaderViewTap(_ header: BluetoothTableHeaderView, section: Int) {
         print("headerview tap section \(section)")
         
-        if expandSectionSet.contains(section) {
-            expandSectionSet.remove(section)
-            bluetoothDetailTableView.beginUpdates()
-            bluetoothDetailTableView.deleteRows(at: [IndexPath(row: 0, section: section)], with: .bottom)
-
-            bluetoothDetailTableView.endUpdates()
-        } else {
-            expandSectionSet.insert(section)
-            
-            bluetoothDetailTableView.beginUpdates()
-            bluetoothDetailTableView.insertRows(at: [IndexPath(row: 0, section: section)], with: .bottom)
-
-//            bluetoothDetailTableView.reloadSections([section], with: .left)
-            bluetoothDetailTableView.endUpdates()
-            
-        }
+//        if expandSectionSet.contains(section) {
+//            expandSectionSet.remove(section)
+//            //bluetoothDetailTableView.isScrollEnabled = false
+//            //bluetoothDetailTableView.beginUpdates()
+//            //bluetoothDetailTableView.deleteRows(at: [IndexPath(row: 0, section: section)], with: .automatic)
+//            //bluetoothDetailTableView.endUpdates()
+////            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { timer in
+////                self.bluetoothDetailTableView.isScrollEnabled = true
+////            }
+//        } else {
+//            expandSectionSet.insert(section)
+//            //bluetoothDetailTableView.isScrollEnabled = false
+//            bluetoothDetailTableView.beginUpdates()
+//            bluetoothDetailTableView.insertRows(at: [IndexPath(row: 0, section: section)], with: .automatic)
+//            bluetoothDetailTableView.endUpdates()
+////            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { timer in
+////                self.bluetoothDetailTableView.isScrollEnabled = true
+////            }
+//
+//
+//
+//        }
+        
+    
         // section reload
-//        bluetoothDetailTableView.beginUpdates()
-//        bluetoothDetailTableView.reloadSections([section], with: .left)
-//        bluetoothDetailTableView.endUpdates()
+        //bluetoothDetailTableView.beginUpdates()
+        //bluetoothDetailTableView.reloadSections([section], with: .automatic)
+        //bluetoothDetailTableView.bounds = CGRect(x: 0, y: 0, width: view.bounds.width, height:bluetoothDetailTableView.contentSize.height)
+
+        //bluetoothDetailTableView.endUpdates()
+        
+       
+        let sectionHeaderRect = bluetoothDetailTableView.rectForHeader(inSection: section)
+
+        if bluetoothDetailTableView.bounds.contains(sectionHeaderRect) {
+            bluetoothDetailTableView.scrollRectToVisible(sectionHeaderRect, animated: true)
+        }
+        
+        
     }
     //ConnectImageViewTap
     func connectImageViewTap(_ header: BluetoothTableHeaderView, section: Int) {
@@ -886,4 +1290,72 @@ extension FirstViewController:RSSIGrapheViewControllerDelegate{
         bluetoothService.startBluetoothScanTimer()
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: "antenna.radiowaves.left.and.right")
     }
+}
+
+extension FirstViewController:BluetoothCellDelegate{
+    func HeaderViewTap(_ cell: BluetoothCell, row: Int) {
+        print("headerview tap row \(row)")
+        
+        if expandSectionSet.contains(row) {
+            expandSectionSet.remove(row)
+            bluetoothDetailTableView.beginUpdates()
+            //cellHeight = BluetoothCell.rowHeight
+            
+            //bluetoothDetailTableView.reloadRows(at: [indexPath], with: .automatic)
+            bluetoothDetailTableView.endUpdates()
+            
+        } else {
+            expandSectionSet.insert(row)
+            bluetoothDetailTableView.beginUpdates()
+            //bluetoothDetailTableView.reloadRows(at: [indexPath], with: .automatic)
+            bluetoothDetailTableView.endUpdates()
+        }
+        
+        
+    }
+    
+    func connectImageViewTap(_ cell: BluetoothCell, row: Int) {
+        print("connectView tap row \(row)")
+        
+        if isConnecting{
+            
+        }else{
+            if let connectalbe = bluetoothService.bleDevices[row].advertisementData[CBAdvertisementDataIsConnectable] as? Int{
+                
+                if (connectalbe == 1){
+                    
+                    isConnecting = true
+                    print("ImageViewTap section\(row)")
+                    bluetoothService.stopBluetoothScanTimer()
+                    activityIndicatorView.startAnimating()
+                    //statusAlert.showInKeyWindow()
+                    //left bar item
+                    navigationItem.leftBarButtonItem?.image = UIImage(systemName: "antenna.radiowaves.left.and.right.slash")
+                    bluetoothService.connectPeripheral(num: row)
+                    connectTimeoutTimer01 = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { timer in
+                        self.bluetoothService.cancelConect()
+                        self.activityIndicatorView.stopAnimating()
+                        self.isConnecting = false
+                        self.bluetoothService.startBluetoothScanTimer()
+                        self.navigationItem.leftBarButtonItem?.image = UIImage(systemName: "antenna.radiowaves.left.and.right")
+                    })
+                    
+                }else{
+                    
+                }
+            }
+            
+            
+            
+            
+            
+            
+    //        var nextModalVC = RSSIGrapheViewController()
+    //        nextModalVC.delegate = self
+    //        self.present(nextModalVC, animated: true)
+        }
+        
+    }
+    
+    
 }

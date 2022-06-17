@@ -36,4 +36,14 @@ extension UIColor {
     class var blu2eColor: UIColor {
         return UIColor(named: "Blue2Color")!
     }
+    
+    class var eagleColor: UIColor {
+        return UIColor(named: "EagleColor")!
+    }
+    
+    class var iceColor: UIColor {
+        return UIColor(named: "IceColor")!
+    }
+
+    
 }

@@ -14,7 +14,7 @@ import Charts
 import AVFoundation
 import Photos
 import StatusAlert
-
+import EMTNeumorphicView
 
 protocol RSSIGrapheViewControllerDelegate:AnyObject{
     func dismissView()
@@ -35,7 +35,7 @@ class RSSIGrapheViewController:UIViewController{
     let deviceNameLabel = UILabel()
     let titleLabel = UILabel()
     let grapheGuideLabel = UILabel()
-    let disconnectButton = UIButton()
+    let disconnectButton = EMTNeumorphicButton()
     let captureAnimationView = UIView()
     let chartXLabel = UILabel()
     let chartYLabel = UILabel()
@@ -43,10 +43,15 @@ class RSSIGrapheViewController:UIViewController{
     //let statusLabel = UILabel()
     let guideLabel = UILabel()
     let bottomStackView = UIStackView()
+    let graphBackground = EMTNeumorphicView()
+
+//    var startStopButton = UIButton(type: .system)
+//    var exportButton = UIButton(type: .system)
+//    var snapshotButton = UIButton()
     
-    var startStopButton = UIButton(type: .system)
-    var exportButton = UIButton(type: .system)
-    var snapshotButton = UIButton()
+    var startStopButton = EMTNeumorphicButton()
+    var exportButton = EMTNeumorphicButton()
+    var snapshotButton = EMTNeumorphicButton()
     
     var rssiChartView = LineChartView()
     var chartDataSet = LineChartDataSet()
@@ -74,11 +79,11 @@ class RSSIGrapheViewController:UIViewController{
             if isBleConnect{
                 isChartOn = true
                 //statusLabel.text = "Connected"
-                disconnectButton.setTitle("disconnect", for: .normal)
+                //disconnectButton.setTitle("disconnect", for: .normal)
             }else{
                 isChartOn = false
                 //statusLabel.text = "Disconnected"
-                disconnectButton.setTitle("close", for: .normal)
+                //disconnectButton.setTitle("close", for: .normal)
                 startStopButton.setTitle("Reconnect", for: .normal)
                 startStopButton.setImage(UIImage(systemName:"goforward"), for: .normal)
                 guideLabel.text = BLE_DISCONNECTED
@@ -218,6 +223,10 @@ class RSSIGrapheViewController:UIViewController{
         
         //塗りつぶし
         //chartDataSet.fill = Fill(color: .white)
+        chartDataSet.drawFilledEnabled = true
+        chartDataSet.fillFormatter = DefaultFillFormatter { _,_  -> CGFloat in
+            return CGFloat(self.rssiChartView.leftAxis.axisMinimum)
+        }
         //chartDataSet.fillAlpha = 0.8
         
         //chartDataSet.drawFilledEnabled = true
@@ -334,11 +343,18 @@ extension RSSIGrapheViewController{
         
         
         disconnectButton.translatesAutoresizingMaskIntoConstraints = false
-        disconnectButton.setTitle("disconnect", for: .normal)
-        disconnectButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        
+        //disconnectButton.setTitle("disconnect", for: .normal)
+        disconnectButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        disconnectButton.tintColor = .white
+        //disconnectButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
         disconnectButton.backgroundColor =  UIColor.appColor
         disconnectButton.setTitleColor(UIColor.white, for: .normal)
         disconnectButton.addTarget(self, action: #selector(disconnectButtonTup), for: .primaryActionTriggered)
+        
+        
+        
+        
         
         //statusLabel.translatesAutoresizingMaskIntoConstraints = false
         //statusLabel.text = "Connected"
@@ -380,10 +396,21 @@ extension RSSIGrapheViewController{
         bottomStackView.backgroundColor =  UIColor.appColor
         bottomStackView.distribution = .fillEqually
         
-        startStopButton.backgroundColor =  UIColor.blu2eColor
-        snapshotButton.backgroundColor = UIColor.blu2eColor
-        exportButton.backgroundColor =  UIColor.blu2eColor
-        
+//        startStopButton.backgroundColor =  UIColor.blu2eColor
+//        snapshotButton.backgroundColor = UIColor.blu2eColor
+//        exportButton.backgroundColor =  UIColor.blu2eColor
+        disconnectButton.neumorphicLayer?.elementDepth = 2
+        startStopButton.neumorphicLayer?.elementDepth = 2
+        snapshotButton.neumorphicLayer?.elementDepth = 2
+        exportButton.neumorphicLayer?.elementDepth = 2
+
+        disconnectButton.neumorphicLayer?.elementBackgroundColor = UIColor.appColor.cgColor
+        startStopButton.neumorphicLayer?.elementBackgroundColor = UIColor.appColor.cgColor
+        snapshotButton.neumorphicLayer?.elementBackgroundColor = UIColor.appColor.cgColor
+        exportButton.neumorphicLayer?.elementBackgroundColor = UIColor.appColor.cgColor
+
+        disconnectButton.layer.cornerRadius = 20
+
         startStopButton.layer.cornerRadius = 25
         snapshotButton.layer.cornerRadius = 25
         exportButton.layer.cornerRadius = 25
@@ -419,6 +446,18 @@ extension RSSIGrapheViewController{
         chartYLabel.font = .preferredFont(forTextStyle: .caption1, compatibleWith: nil)
         chartYLabel.isHidden = true
 
+        
+        
+        graphBackground.translatesAutoresizingMaskIntoConstraints = false
+        graphBackground.backgroundColor = .appColor
+        graphBackground.layer.cornerRadius = 10
+        
+        graphBackground.neumorphicLayer?.elementBackgroundColor = graphBackground.backgroundColor!.cgColor
+        graphBackground.neumorphicLayer?.cornerRadius = 10
+        // set convex or concave.
+        graphBackground.neumorphicLayer?.depthType = .convex
+        // set elementDepth (corresponds to shadowRadius). Default is 5
+        graphBackground.neumorphicLayer?.elementDepth = 2
         
         
     }
@@ -609,7 +648,8 @@ extension RSSIGrapheViewController{
         
         //topview.addSubview(titleLabel)
         topview.addSubview(deviceNameLabel)
-        topview.addSubview(disconnectButton)
+        //topview.addSubview(disconnectButton)
+        
        
         //topview.addSubview(statusLabel)
         
@@ -620,11 +660,14 @@ extension RSSIGrapheViewController{
         bottomStackView.addArrangedSubview(exportButton)
         
         stackView.addArrangedSubview(topview)
-        stackView.addArrangedSubview(rssiChartView)
+        //stackView.addArrangedSubview(rssiChartView)
+        stackView.addArrangedSubview(graphBackground)
+        graphBackground.addSubview(rssiChartView)
+        
         stackView.addArrangedSubview(bottomView)
         
         view.addSubview(stackView)
-        
+        view.addSubview(disconnectButton)
         view.addSubview(titleLabel)
         view.addSubview(grapheGuideLabel)
         
@@ -648,10 +691,32 @@ extension RSSIGrapheViewController{
             
         ])
         
+//        NSLayoutConstraint.activate([
+//            rssiChartView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+//            rssiChartView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor)
+//        ])
+        
         NSLayoutConstraint.activate([
-            rssiChartView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
-            rssiChartView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor)
+            graphBackground.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+            graphBackground.trailingAnchor.constraint(equalTo: stackView.trailingAnchor)
         ])
+        
+        NSLayoutConstraint.activate([
+            rssiChartView.topAnchor.constraint(equalToSystemSpacingBelow: graphBackground.topAnchor, multiplier: 1),
+            rssiChartView.leadingAnchor.constraint(equalToSystemSpacingAfter: graphBackground.leadingAnchor, multiplier: 1),
+            graphBackground.trailingAnchor.constraint(equalToSystemSpacingAfter: rssiChartView.trailingAnchor, multiplier: 1),
+            graphBackground.bottomAnchor.constraint(equalToSystemSpacingBelow: rssiChartView.bottomAnchor, multiplier: 2)
+            
+            
+//            rssiChartView.topAnchor.constraint(equalTo: graphBackground.topAnchor),
+//            rssiChartView.bottomAnchor.constraint(equalTo: graphBackground.bottomAnchor),
+//            rssiChartView.leadingAnchor.constraint(equalTo: graphBackground.leadingAnchor),
+//            rssiChartView.trailingAnchor.constraint(equalTo: graphBackground.trailingAnchor),
+        ])
+        
+        
+        
+        
         
         NSLayoutConstraint.activate([
             bottomView.heightAnchor.constraint(equalToConstant: 120),
@@ -661,12 +726,18 @@ extension RSSIGrapheViewController{
         
         //topView関連
         NSLayoutConstraint.activate([
-            disconnectButton.centerYAnchor.constraint(equalTo: topview.centerYAnchor),
-            disconnectButton.leadingAnchor.constraint(equalToSystemSpacingAfter: topview.leadingAnchor, multiplier: 1)
+            //disconnectButton.centerYAnchor.constraint(equalTo: topview.centerYAnchor),
+            disconnectButton.topAnchor.constraint(equalToSystemSpacingBelow: view.topAnchor, multiplier: 1 ),
+            disconnectButton.leadingAnchor.constraint(equalToSystemSpacingAfter: topview.leadingAnchor, multiplier: 0.5),
+            
+            disconnectButton.widthAnchor.constraint(equalToConstant: 40),
+            disconnectButton.heightAnchor.constraint(equalToConstant: 40)
+
         ])
         
         NSLayoutConstraint.activate([
-            deviceNameLabel.centerYAnchor.constraint(equalTo: topview.centerYAnchor),
+            //deviceNameLabel.centerYAnchor.constraint(equalTo: topview.centerYAnchor),
+            deviceNameLabel.topAnchor.constraint(equalToSystemSpacingBelow: topview.topAnchor, multiplier:0 ),
             deviceNameLabel.centerXAnchor.constraint(equalTo: topview.centerXAnchor)
         ])
         
@@ -676,19 +747,19 @@ extension RSSIGrapheViewController{
         ])
         
         NSLayoutConstraint.activate([
-            grapheGuideLabel.topAnchor.constraint(equalToSystemSpacingBelow: titleLabel.bottomAnchor, multiplier: -0.2),
+            grapheGuideLabel.topAnchor.constraint(equalToSystemSpacingBelow: titleLabel.bottomAnchor, multiplier: 2),
             grapheGuideLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
         
         
         NSLayoutConstraint.activate([
             chartXLabel.topAnchor.constraint(equalTo: rssiChartView.bottomAnchor),
-            view.trailingAnchor.constraint(equalToSystemSpacingAfter: chartXLabel.trailingAnchor, multiplier: 1)
+            view.trailingAnchor.constraint(equalToSystemSpacingAfter: chartXLabel.trailingAnchor, multiplier: 2)
         ])
         
         NSLayoutConstraint.activate([
             chartYLabel.topAnchor.constraint(equalToSystemSpacingBelow: rssiChartView.topAnchor, multiplier: 0),
-            chartYLabel.leadingAnchor.constraint(equalToSystemSpacingAfter: view.leadingAnchor, multiplier: 1)
+            chartYLabel.leadingAnchor.constraint(equalToSystemSpacingAfter: view.leadingAnchor, multiplier: 1.5)
         ])
         
         
@@ -716,5 +787,6 @@ extension RSSIGrapheViewController{
     }
     
 }
+
 
 

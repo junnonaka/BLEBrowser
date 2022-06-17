@@ -3,6 +3,7 @@ PODS:
     - Charts/Core (= 4.0.3)
   - Charts/Core (4.0.3):
     - SwiftAlgorithms (~> 1.0)
+  - EMTNeumorphicView (1.0.4)
   - FirebaseAnalytics (9.1.0):
     - FirebaseAnalytics/AdIdSupport (= 9.1.0)
     - FirebaseCore (~> 9.0)
@@ -92,12 +93,14 @@ PODS:
 
 DEPENDENCIES:
   - Charts
+  - EMTNeumorphicView
   - FirebaseAnalytics
   - StatusAlert (~> 1.1.1)
 
 SPEC REPOS:
   trunk:
     - Charts
+    - EMTNeumorphicView
     - FirebaseAnalytics
     - FirebaseCore
     - FirebaseCoreDiagnostics
@@ -113,6 +116,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Charts: d959d6723c8eedfdd0735dfc28cb0a71762ac4d9
+  EMTNeumorphicView: cb5e92953e43b1872ab47fefd451a9ce0c16fc77
   FirebaseAnalytics: bf11064790ac96804df1df9ddc0ae45af950d9fc
   FirebaseCore: b7bfc258e996eada23b3666bd6b9a22ca092acb8
   FirebaseCoreDiagnostics: 2dabba3412b23b524823325739f45e520f67d1e7
@@ -126,6 +130,6 @@ SPEC CHECKSUMS:
   StatusAlert: a18ec3c33d36a06d4479c1f2b15ffac67aaf7ab1
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
 
-PODFILE CHECKSUM: 6c4fa7db6f6db3b1b51a14a660aaef12005aeaab
+PODFILE CHECKSUM: 9000f28a3aaef9a96c864b31b28449a66a24484d
 
 COCOAPODS: 1.11.2

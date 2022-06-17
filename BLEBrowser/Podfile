@@ -9,6 +9,7 @@ target 'BLEBrowser' do
   pod 'StatusAlert', '~> 1.1.1'
   pod 'Charts'
   pod 'FirebaseAnalytics'
+  pod 'EMTNeumorphicView'
 
 end
 
