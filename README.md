@@ -1,4 +1,4 @@
 # BLEBrowser
-this is copy practice app
+this is First practice BLE app
 
-これはBLEの監視が出来る某アプリをコピーしてiOSアプリの練習をするためのリポジトリです。
+これはBLEのRSSIが監視が出来るアプリのソースコードです
