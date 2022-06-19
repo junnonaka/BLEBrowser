@@ -39,8 +39,10 @@ class RSSIGrapheViewController:UIViewController{
     let captureAnimationView = UIView()
     let chartXLabel = UILabel()
     let chartYLabel = UILabel()
+    let RSSItextlabel = UILabel()
+    let RSSIlabel = UILabel()
 
-    //let statusLabel = UILabel()
+
     let guideLabel = UILabel()
     let bottomStackView = UIStackView()
     let graphBackground = EMTNeumorphicView()
@@ -148,7 +150,6 @@ class RSSIGrapheViewController:UIViewController{
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //delegate?.dismissView()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -181,6 +182,7 @@ class RSSIGrapheViewController:UIViewController{
                 
                 nowRssiDatas.append(Double(nowRssi!))
                 displayChart(data: nowRssiDatas)
+                RSSIlabel.text = "\(nowRssi!)dbm"
             }
         }
         
@@ -237,7 +239,7 @@ class RSSIGrapheViewController:UIViewController{
         rssiChartView.highlightPerTapEnabled = true // プロットをタップして選択不可
         rssiChartView.legend.enabled = false // グラフ名（凡例）を非表示
         rssiChartView.pinchZoomEnabled = true // ピンチズーム可能
-        rssiChartView.doubleTapToZoomEnabled = true // ダブルタップズーム不可
+        rssiChartView.doubleTapToZoomEnabled = true // ダブルタップズーム可能
         
         rssiChartView.highlightPerTapEnabled = false
         rssiChartView.extraTopOffset = 20 // 上から20pxオフセットすることで上の方にある値(99.0)を表示する
@@ -377,7 +379,16 @@ extension RSSIGrapheViewController{
         // set elementDepth (corresponds to shadowRadius). Default is 5
         graphBackground.neumorphicLayer?.elementDepth = 2
         
+        RSSItextlabel.text = "RSSI"
+        RSSItextlabel.translatesAutoresizingMaskIntoConstraints = false
+        RSSItextlabel.textColor = .white
+        RSSItextlabel.font = .preferredFont(forTextStyle: .body, compatibleWith: nil)
         
+        RSSIlabel.text = "--db"
+        RSSIlabel.translatesAutoresizingMaskIntoConstraints = false
+        RSSIlabel.textColor = .white
+        RSSIlabel.font = .preferredFont(forTextStyle: .body, compatibleWith: nil)
+
     }
     
     @objc func snapshotButtonTup(){
@@ -403,7 +414,7 @@ extension RSSIGrapheViewController{
                 self.present(alert, animated: true, completion: nil)
                 }
             }else{
-                AudioServicesPlaySystemSound(1108);
+                
                 DispatchQueue.main.async {
                     self.captureAnimationView.isHidden = false
                     self.captureAnimationView.alpha = 1
@@ -412,9 +423,14 @@ extension RSSIGrapheViewController{
                     } completion: { Bool in
                         self.captureAnimationView.isHidden = true
                     }
-                    
+                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { timer in
+                        AudioServicesPlaySystemSound(1108);
+                    }
                     //キャプチャ取得.変数screenshotにUIImageが保存されます
-                    let layer = UIApplication.shared.keyWindow!.layer
+                    //let layer = UIApplication.shared.keyWindow!.layer
+                    
+                    let layer = UIApplication.shared.windows[0].layer
+                   
                     
                     let scale = UIScreen.main.scale
                     UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale);
@@ -467,6 +483,9 @@ extension RSSIGrapheViewController{
         
         present(alertController, animated:true, completion: nil)
         
+        
+        
+        
     }
     @objc func disconnectButtonTup(sender:UIButton){
         dismiss(animated: true)
@@ -517,35 +536,7 @@ extension RSSIGrapheViewController{
         fileStrData += "time(sec)"
         fileStrData += ","
         fileStrData += "dbm"
-//        if let offset = rssiOffset{
-//            fileStrData += ","
-//            fileStrData += "オフセットRSSI:\(offset)dbm"
-//
-//            //if let delta = startPedometerDeltaRssi{
-//                fileStrData += ","
-//                fileStrData += "デルタRSSI:\(startPedometerDeltaRssi)dbm"
-//                fileStrData += ","
-//                fileStrData += "切断閾値RSSI:\(offset + startPedometerDeltaRssi)dbm"
-//
-//            //}
-//
-//        }
-       
-//        if timerTimingTups.count > 0{
-//            var count = 1
-//            for timing in timerTimingTups{
-//                fileStrData += ","
-//                fileStrData += "時間記録\(count)回目:\(timing)秒"
-//                count += 1
-//            }
-//        }
-        
-
-        
-        
         fileStrData += "\n"
-
-        
         
         //StringのCSV用データを準備
         for count in 0...fileArrData.count{
@@ -578,12 +569,7 @@ extension RSSIGrapheViewController{
     
     func layout(){
         
-        //topview.addSubview(titleLabel)
         topview.addSubview(deviceNameLabel)
-        //topview.addSubview(disconnectButton)
-        
-       
-        //topview.addSubview(statusLabel)
         
         bottomView.addSubview(bottomStackView)
         bottomView.addSubview(guideLabel)
@@ -607,6 +593,10 @@ extension RSSIGrapheViewController{
         view.addSubview(chartYLabel)
         
         view.addSubview(captureAnimationView)
+        
+        //view.addSubview(RSSItextlabel)
+        view.addSubview(RSSIlabel)
+        
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalToSystemSpacingBelow: view.topAnchor, multiplier: 1),
             stackView.leadingAnchor.constraint(equalToSystemSpacingAfter: view.leadingAnchor, multiplier: 1),
@@ -623,10 +613,6 @@ extension RSSIGrapheViewController{
             
         ])
         
-//        NSLayoutConstraint.activate([
-//            rssiChartView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
-//            rssiChartView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor)
-//        ])
         
         NSLayoutConstraint.activate([
             graphBackground.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
@@ -668,7 +654,6 @@ extension RSSIGrapheViewController{
         ])
         
         NSLayoutConstraint.activate([
-            //deviceNameLabel.centerYAnchor.constraint(equalTo: topview.centerYAnchor),
             deviceNameLabel.topAnchor.constraint(equalToSystemSpacingBelow: topview.topAnchor, multiplier:0 ),
             deviceNameLabel.centerXAnchor.constraint(equalTo: topview.centerXAnchor)
         ])
@@ -715,6 +700,13 @@ extension RSSIGrapheViewController{
             captureAnimationView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             captureAnimationView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
+        //RSSITextLabel
+        NSLayoutConstraint.activate([
+            RSSIlabel.bottomAnchor.constraint(equalTo: titleLabel.bottomAnchor),
+            view.trailingAnchor.constraint(equalToSystemSpacingAfter: RSSIlabel.trailingAnchor, multiplier: 1)
+        ])
+        
         
     }
     

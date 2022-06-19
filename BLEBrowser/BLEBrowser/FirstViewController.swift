@@ -11,7 +11,7 @@ import CoreBluetooth
 import StatusAlert
 
 class FirstViewController:UIViewController{
-    
+    //MARK: - var
     //Filterのセル情報
     var filterCellSettings: [(filterType: String, imageAlpha: Double,selected:Bool)] = [
         ("No filter",0,true),
@@ -39,8 +39,10 @@ class FirstViewController:UIViewController{
     //Bluetoothオブジェクト
     var bluetoothService:BluetoothService!
     
-    //グルグル
+    //接続中のindicator
     var activityIndicatorView = UIActivityIndicatorView()
+    //BLEスキャン中のindicator
+    var bleActivityIndicatorView = UIActivityIndicatorView()
     
     //タイマー宣言:接続タイムアウト用1秒タイマー
     var connectTimeoutTimer01: Timer!
@@ -50,8 +52,6 @@ class FirstViewController:UIViewController{
         barButtonItem.tintColor = .white
         return barButtonItem
     }()
-    
-    
     
     let stackView = UIStackView()
     let label = UILabel()
@@ -64,20 +64,17 @@ class FirstViewController:UIViewController{
     var txPowerLevel = "no data"
     var isConnectable = "no data"
     var solicitedServiceUUIDs = "no data"
-    
+    //接続完了Alert
     let connectStatusAlert = StatusAlert()
-    
+    //BluetoothDetailtableviewにつけるrefreshControl
     let refreshControl = UIRefreshControl()
-
-    var contentView = UIView()
-    
+    //接続中かどうかのフラグ
     var isConnecting = false
-    
-    var cellHeight = BluetoothCell.rowHeight
-    
+    //初期ロード時かどうかのフラグ
     var isFirstLoad = false
     
     //Haptic Feedbackの準備
+    //Success
     private let feedbackGenerator: Any? = {
         if #available(iOS 10.0, *) {
             let generator: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
@@ -87,6 +84,7 @@ class FirstViewController:UIViewController{
             return nil
         }
     }()
+    //Impact
     private let buttonFeedbackGenerator: Any? = {
         if #available(iOS 10.0, *) {
             let generator: UIImpactFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
@@ -97,28 +95,39 @@ class FirstViewController:UIViewController{
         }
     }()
     
+    //MARK: - View Lifecicle
     override func viewDidLoad() {
         super.viewDidLoad()
         bluetoothInit()
+        connectStatusAlertInit()
+        setNotificationCenter()
+        style()
+        layout()
+       
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        bluetoothService.bleDevices = nil
+        bluetoothDetailTableView.reloadData()
         
+        bluetoothService.startBluetoothScanTimer()
+    }
+    
+    //Alertの初期化
+    func connectStatusAlertInit(){
         connectStatusAlert.image = UIImage(systemName: "checkmark")
         connectStatusAlert.title = "Connected"
         connectStatusAlert.appearance.blurStyle = .extraLight
         connectStatusAlert.message = ""
         connectStatusAlert.canBePickedOrDismissed = false
-        
-        style()
-        layout()
-        setNotificationCenter()
-       
     }
-    
+    //BLE関連の初期化
     func bluetoothInit(){
-        //BLE関連の初期化
         bluetoothService = BluetoothService.shared
         bluetoothService.setupBluetooth()
     }
-    
+    //NotificationCenterの初期化
     func setNotificationCenter(){
         NotificationCenter.default.addObserver(self, selector: #selector(updateTableView),
                                                name: .notifyBlePeripheralCountUpdate, object: nil)
@@ -136,13 +145,6 @@ class FirstViewController:UIViewController{
     }
     
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        bluetoothService.bleDevices = nil
-        bluetoothDetailTableView.reloadData()
-        bluetoothService.startBluetoothScanTimer()
-    }
-    
     @objc func updateTableView(){
         if isFirstLoad == false{
             bluetoothDetailTableView.reloadData()
@@ -153,7 +155,6 @@ class FirstViewController:UIViewController{
             bluetoothDetailTableView.endUpdates()
         }
         
-        
         if bluetoothDetailTableView.refreshControl!.isRefreshing{
             self.bluetoothDetailTableView.refreshControl?.endRefreshing()
         }
@@ -162,9 +163,11 @@ class FirstViewController:UIViewController{
     @objc func leftbarButtonItemTup(){
         if bluetoothService.isScaning{
             bluetoothService.stopBluetoothScanTimer()
+            bleActivityIndicatorView.stopAnimating()
             navigationItem.leftBarButtonItem?.image = UIImage(systemName: "antenna.radiowaves.left.and.right.slash")
         }else{
             bluetoothService.startBluetoothScanTimer()
+            bleActivityIndicatorView.startAnimating()
             self.navigationItem.leftBarButtonItem?.image = UIImage(systemName: "antenna.radiowaves.left.and.right")
         }
     }
@@ -184,7 +187,6 @@ class FirstViewController:UIViewController{
                 alpha = 0.2
             }
             cell.RSSIImageView.alpha = alpha
-            //headerView.RSSILabel.text = bluetoothService.bleDevices[count].rssi.stringValue
             
             if(bluetoothService.bleDevices[count].rssi.stringValue == "127"){
                 print("127")
@@ -227,7 +229,7 @@ class FirstViewController:UIViewController{
     
     
 }
-
+//MARK: - ViewSetup
 extension FirstViewController{
     
     func style(){
@@ -248,34 +250,46 @@ extension FirstViewController{
         
         
         bluetoothDetailTableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        bluetoothDetailTableView.backgroundColor = .eagleColor
-
-        
+        bluetoothDetailTableView.backgroundColor = .numoColor
         bluetoothDetailTableView.delegate = self
         bluetoothDetailTableView.dataSource = self
         bluetoothDetailTableView.register(BluetoothCell.self, forCellReuseIdentifier: BluetoothCell.reuseID)
-
         bluetoothDetailTableView.tag = 3
         bluetoothDetailTableView.separatorColor = .clear
         bluetoothDetailTableView.showsHorizontalScrollIndicator = true
         bluetoothDetailTableView.indicatorStyle = .black
-        
-        bluetoothDetailTableView.automaticallyAdjustsScrollIndicatorInsets = false
-        
-        bluetoothDetailTableView.rowHeight = UITableView.automaticDimension
-        bluetoothDetailTableView.estimatedRowHeight = 60
-        bluetoothDetailTableView.sectionHeaderHeight = UITableView.automaticDimension
-        bluetoothDetailTableView.estimatedSectionHeaderHeight = 60
-        bluetoothDetailTableView.isScrollEnabled = true
-        
-        
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.backgroundColor = .red
-        
         setupRefreshControl()
         
     }
+    
+    func layout(){
+        
+        activityIndicatorView.center = view.center
+        activityIndicatorView.style = .large
+        activityIndicatorView.color = .blueColor
+        
+        bleActivityIndicatorView.style = .medium
+        bleActivityIndicatorView.color = .white
+        bleActivityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(bluetoothDetailTableView)
+        view.addSubview(activityIndicatorView)
+        view.addSubview(bleActivityIndicatorView)
+        
+        navigationController?.view.addSubview(bleActivityIndicatorView)
+        
+        bleActivityIndicatorView.startAnimating()
+        
+        
+        NSLayoutConstraint.activate([
+            bleActivityIndicatorView.leadingAnchor.constraint(equalToSystemSpacingAfter: navigationController!.view.leadingAnchor, multiplier: 6),
+            bleActivityIndicatorView.centerYAnchor.constraint(equalTo : navigationController!.navigationBar.centerYAnchor ),
+        ])
+    }
+}
+
+//MARK: - Setup Function
+extension FirstViewController{
     
     private func setupRefreshControl(){
         refreshControl.tintColor = UIColor.appColor
@@ -295,32 +309,11 @@ extension FirstViewController{
         isFirstLoad = false
         bluetoothDetailTableView.reloadData()
         expandSectionSet.removeAll()
+        bleActivityIndicatorView.startAnimating()
+        self.navigationItem.leftBarButtonItem?.image = UIImage(systemName: "antenna.radiowaves.left.and.right")
         bluetoothService.startBluetoothScanTimer()
         
     }
-    
-    func layout(){
-        
-        activityIndicatorView.center = view.center
-        activityIndicatorView.style = .large
-        activityIndicatorView.color = .blueColor
-        view.addSubview(bluetoothDetailTableView)
-        view.addSubview(activityIndicatorView)
-      
-        //bluetoothTableView
-        NSLayoutConstraint.activate([
-            bluetoothDetailTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            //Navigationにレイアウトをかける時はsafeAriaLayoutGuideらしい
-            bluetoothDetailTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            bluetoothDetailTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bluetoothDetailTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
-
-        ])
-    }
-    
-}
-extension FirstViewController{
     
     //NavigationBar
     private func setNavigationBar(){
@@ -353,9 +346,6 @@ extension FirstViewController{
         UIView.animate(withDuration: 1.0, delay: 1, options: [.repeat,.curveEaseInOut], animations: {
             self.navigationItem.leftBarButtonItem?.image?.withTintColor(.green)
         }, completion: nil)
-        
-    
-        
     }
     
     //MenuBottnにUIMenuをセット
@@ -472,8 +462,11 @@ extension FirstViewController{
         menuButtonItem.tintColor = .white
     }
 }
+
+//MARK: - UITableViewDataSource
 extension FirstViewController:UITableViewDataSource{
     
+    //MARK: - CellForRowAt
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch tableView.tag{
         case 0:
@@ -673,7 +666,7 @@ extension FirstViewController:UITableViewDataSource{
         }
     }
     
-    
+    //MARK: - numberOfRowsInSection
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         var count = 0
@@ -689,44 +682,8 @@ extension FirstViewController:UITableViewDataSource{
         default:
             count = 2
         }
-        
-        
         return count
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch tableView.tag{
-        case 0:
-            print("tap1")
-        case 1:
-            print("tap2")
-        case 2:
-            print("tap3")
-        case 3:
-            print("tap4")
-            
-            
-            if expandSectionSet.contains(indexPath.row) {
-                expandSectionSet.remove(indexPath.row)
-                bluetoothDetailTableView.beginUpdates()
-                //cellHeight = BluetoothCell.rowHeight
-                
-                //bluetoothDetailTableView.reloadRows(at: [indexPath], with: .automatic)
-                bluetoothDetailTableView.endUpdates()
-                
-            } else {
-                expandSectionSet.insert(indexPath.row)
-                bluetoothDetailTableView.beginUpdates()
-                //bluetoothDetailTableView.reloadRows(at: [indexPath], with: .automatic)
-                bluetoothDetailTableView.endUpdates()
-            }
-        default:
-            print("tap")
-            
-        }
-    }
-    
-    
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0
@@ -735,11 +692,12 @@ extension FirstViewController:UITableViewDataSource{
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 0
     }
-    
-    
 }
 
+//MARK: - UITableViewDelegate
 extension FirstViewController:UITableViewDelegate{
+    
+    //MARK: - heightForRowAt
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var height = 0.0
         switch tableView.tag{
@@ -758,63 +716,25 @@ extension FirstViewController:UITableViewDelegate{
                 }
             }else{
                 height = BluetoothCell.rowHeight
-                if let cell = tableView.cellForRow(at: indexPath) as? BluetoothCell{
-                    cell.dataTextView.isHidden = true
-                }
+                //if let cell = tableView.cellForRow(at: indexPath) as? BluetoothCell{
+                    //cell.dataTextView.isHidden = true
+                //}
             }
-            
-            
         default:
             height = 44
         }
         return height
     }
     
-    
-    // UITableViewDelegate
+    //MARK: - viewForHeaderInSection
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        var headerview:UIView? = nil
-        switch tableView.tag{
-        case 0:
-            headerview = nil
-        case 1:
-            headerview = nil
-        case 2:
-            headerview = nil
-        case 3:
-            
-            headerview = nil
-
-        default:
-            headerview = nil
-        }        
-        return headerview
+        return nil
     }
     
     
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        var num = 1
-        switch tableView.tag{
-        case 0:
-            print("1")
-        case 1:
-            print("2")
-        case 2:
-            print("3")
-        case 3:
-            num = (bluetoothService.bleDevices != nil) ? bluetoothService.bleDevices.count : 0
-            
-            num = 1
-            
-        default:
-            print("tap")
-        }
-        
-        return num
-    }
 }
 
+//MARK: - FilterCellDelegate
 extension FirstViewController:FilterCellDelegate{
     func didTapButton(cell: FilterCell) {
         print("did tup cell \(cell.tag)")
@@ -829,7 +749,7 @@ extension FirstViewController:FilterCellDelegate{
         filterAlertlCustumTableView.reloadData()
     }
 }
-
+//MARK: - SortCelllDelegate
 extension FirstViewController:SortCelllDelegate{
     func didTapButton(cell: SortCell) {
         print("did tup cell \(cell.tag)")
@@ -846,15 +766,18 @@ extension FirstViewController:SortCelllDelegate{
     
 }
 
+//MARK: - RSSIGrapheViewControllerDelegate
 extension FirstViewController:RSSIGrapheViewControllerDelegate{
     func dismissView() {
         isConnecting = false
         print("dismiss PresentView")
         bluetoothService.startBluetoothScanTimer()
+        bleActivityIndicatorView.startAnimating()
         navigationItem.leftBarButtonItem?.image = UIImage(systemName: "antenna.radiowaves.left.and.right")
     }
 }
 
+//MARK: - BluetoothCellDelegate
 extension FirstViewController:BluetoothCellDelegate{
     func HeaderViewTap(_ cell: BluetoothCell, row: Int) {
         print("headerview tap row \(row)")
@@ -862,19 +785,12 @@ extension FirstViewController:BluetoothCellDelegate{
         if expandSectionSet.contains(row) {
             expandSectionSet.remove(row)
             bluetoothDetailTableView.beginUpdates()
-            //cellHeight = BluetoothCell.rowHeight
-            
-            //bluetoothDetailTableView.reloadRows(at: [indexPath], with: .automatic)
             bluetoothDetailTableView.endUpdates()
-            
         } else {
             expandSectionSet.insert(row)
             bluetoothDetailTableView.beginUpdates()
-            //bluetoothDetailTableView.reloadRows(at: [indexPath], with: .automatic)
             bluetoothDetailTableView.endUpdates()
         }
-        
-        
     }
     
     func connectImageViewTap(_ cell: BluetoothCell, row: Int) {
@@ -893,15 +809,20 @@ extension FirstViewController:BluetoothCellDelegate{
                     }
                     print("ImageViewTap section\(row)")
                     bluetoothService.stopBluetoothScanTimer()
+                    bleActivityIndicatorView.stopAnimating()
                     activityIndicatorView.startAnimating()
                     //left bar item
                     navigationItem.leftBarButtonItem?.image = UIImage(systemName: "antenna.radiowaves.left.and.right.slash")
                     bluetoothService.connectPeripheral(num: row)
+                    
+                    
+                    
                     connectTimeoutTimer01 = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { timer in
                         self.bluetoothService.cancelConect()
                         self.activityIndicatorView.stopAnimating()
                         self.isConnecting = false
                         self.bluetoothService.startBluetoothScanTimer()
+                        self.bleActivityIndicatorView.startAnimating()
                         self.navigationItem.leftBarButtonItem?.image = UIImage(systemName: "antenna.radiowaves.left.and.right")
                     })
                     
@@ -910,8 +831,5 @@ extension FirstViewController:BluetoothCellDelegate{
                 }
             }
         }
-        
     }
-    
-    
 }

@@ -23,8 +23,8 @@ class BluetoothService: NSObject {
     private var bleScanTimer:Timer!
     
     var isScaning = false
+
     
-    //var peripherals:[CBPeripheral]!
     var bleDevices:[BLEDevice]!
     
     private var readedRssi = 0
@@ -75,14 +75,6 @@ class BluetoothService: NSObject {
     /// 機器に接続
     func connectPeripheral(num:Int) {
         connectPeripheral = bleDevices[num].peripheral
-//        if let peripheral = self.bleDevices[num].peripheral{
-//
-//        }
-//        guard let peripheral = self.bleDevices[num].peripheral else {
-//            // 失敗処理
-//            print("connect error")
-//            return
-//        }
         self.centralManager.connect(connectPeripheral, options: nil)
     }
     
@@ -92,11 +84,6 @@ class BluetoothService: NSObject {
     }
     /// 機器に切断
     func disconnectPeripheral() {
-//        guard let peripheral = self.peripheral else {
-//            // 失敗処理
-//            print("disconnect error")
-//            return
-//        }
         self.centralManager.cancelPeripheralConnection(connectPeripheral)
     }
     
@@ -105,9 +92,7 @@ class BluetoothService: NSObject {
     }
     
     func readRssi()->Int{
-//        if let peripheral = self.peripheral{
         connectPeripheral.readRSSI()
-//        }
         return readedRssi
     }
     
@@ -185,18 +170,6 @@ extension BluetoothService:CBCentralManagerDelegate{
         }
         // 通知を送りたい箇所でこのように記述
         NotificationCenter.default.post(name: .notifyBleScanFinded, object: nil,userInfo: ["RSSI":RSSI])
-
-        //手動接続の場合
-        // 対象機器のみ保持する
-        //self.peripheral = peripheral
-        // 機器に接続
-        //print("機器に接続：\(String(describing: peripheral.name))")
-        //バックグラウンドにいる時はこのタイミングでは接続しない
-        //接続
-        //self.centralManager.connect(peripheral, options: nil)
-        //print("WLモジュールと接続試行")
-        
-        
         
     }
     
@@ -222,21 +195,9 @@ extension BluetoothService:CBCentralManagerDelegate{
 //        print("UUID:",peripheral.identifier)
 //        print("delegate:",peripheral.delegate)
         
-        //centralManager.cancelPeripheralConnection(peripheral)
-        
-        //peripheral.discoverServices(nil)
-        
-        
         // 通知を送りたい箇所でこのように記述
         NotificationCenter.default.post(name: .notifyBleConnected, object: nil)
-        
-        
         self.stopBluetoothScan()
-        
-        //接続済み機器一覧に格納
-        //var peripheralUuidString = peripheral.identifier.uuidString
-        //var identifiers:[String] = []
-        
     }
     /// 接続切断時
     ////
@@ -253,94 +214,6 @@ extension BluetoothService:CBCentralManagerDelegate{
 }
 
 extension BluetoothService:CBPeripheralDelegate{
-    /// キャラクタリスティック探索時(機器接続直後に呼ばれる)
-    ///
-    /// - Parameters:
-    ///   - peripheral: CBPeripheral
-    ///   - error: Error
-    /// ⑤-1:サービス発見時に呼ばれるメソッド
-    func peripheral(_ peripheral: CBPeripheral,
-                    didDiscoverServices error: Error?) {
-        
-//        print("サービス発見")
-//        print("serviceUUID:",peripheral)
-//        if error != nil {
-//            print(error.debugDescription)
-//            return
-//        }
-//        
-//        let services : NSArray = peripheral.services as! NSArray
-//        print("Service discovered count=\(services.count) services=\(services)")
-//        if services.count == 0{
-//            
-//        }else{
-//            for service in services as! [CBService] {
-//                print(service)
-//                print(service.uuid)
-//                print(service.uuid.uuidString)
-//                self.peripheral!.discoverCharacteristics(nil, for:service)
-//            }
-//        }
-    }
-    
-    /// キャラクタリスティック発見時(機器接続直後に呼ばれる)
-    ///
-    /// - Parameters:
-    ///   - peripheral: CBPeripheral
-    ///   - service: CBService
-    ///   - error: Error
-    /// ⑥-1:キャリアクタリスティク発見時に呼ばれる
-    func peripheral(_ peripheral: CBPeripheral,
-                    didDiscoverCharacteristicsFor service: CBService,
-                    error: Error?) {
-        //エラーの場合はリターン
-        if error != nil {
-            print(error.debugDescription)
-            return
-        }
-        
-        //キャラクタリスティクのUUIDを保存
-        print("キャラクタリスティク発見")
-        
-        //キャラクタリスティクのproperty確認用
-        for characreristic in service.characteristics!{
-            print("キャラクタリスティク",characreristic)
-            
-            switch characreristic.properties {
-            case .broadcast:
-                print("property:Broadcast")
-                
-            case .extendedProperties:
-                print("property:extendedProperties")
-                
-            case .indicate:
-                print("property:indicate")
-                
-            case .indicateEncryptionRequired:
-                print("property:indicateEncryptionRequired")
-                
-            case .notify:
-                print("property:notify")
-                
-            case .notifyEncryptionRequired:
-                print("property:notifyEncryptionRequired")
-                
-            case .read:
-                print("property:read")
-                
-            case .write:
-                print("property:write")
-                
-            case .writeWithoutResponse:
-                print("property:writeWithoutResponse")
-            case .authenticatedSignedWrites:
-                print("property:writeWithoutResponse")
-            default:
-                print("not Description")
-            }
-        }
-    }
-    
     //RSSIの取得
     func peripheral(_ peripheral: CBPeripheral,didReadRSSI RSSI: NSNumber,error: Error?){
         print("RSSI",RSSI.intValue)

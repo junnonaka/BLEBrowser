@@ -25,11 +25,13 @@ class BluetoothCell : UITableViewCell{
     let dataTextView = UITextView()
     let connectView = UIView()
     let mainBackground = EMTNeumorphicView()
+    let textViewBackground = EMTNeumorphicView()
+
     let NumoButton = EMTNeumorphicButton()
     
     static let reuseID = "BluetoothCell"
     static let rowHeight:CGFloat = 69
-    static let allRowHeight:CGFloat = 180
+    static let allRowHeight:CGFloat = 200
 
     //row情報保持用
     var row = 0
@@ -100,26 +102,16 @@ extension BluetoothCell{
         dataTextView.translatesAutoresizingMaskIntoConstraints = false
         dataTextView.font = UIFont.preferredFont(forTextStyle: .caption2, compatibleWith: nil)
         dataTextView.textColor = .appColor
-        dataTextView.isScrollEnabled = false
+        //dataTextView.isScrollEnabled = false
         dataTextView.isEditable = false
         dataTextView.backgroundColor = .clear
         dataTextView.layer.cornerRadius = 10
-        //dataTextView.backgroundColor = .white
-        //dataTextView.layer.cornerRadius = 5
-//        dataTextView.text.append(contentsOf: "LocalName: no data\n")
-//        dataTextView.text.append(contentsOf: "ManufactureData: no data\n")
-//        dataTextView.text.append(contentsOf: "Service Data: no data\n")
-//        dataTextView.text.append(contentsOf: "Service UUIDs: no data\n")
-//        dataTextView.text.append(contentsOf: "Overflow Service UUIDs: no data\n")
-//        dataTextView.text.append(contentsOf: "TxPower Level: no data\n")
-//        dataTextView.text.append(contentsOf: "Is connectable: no data\n")
-//        dataTextView.text.append(contentsOf: "Solicited Service UUIDs: no data\n")
 
         //初期は決しておく
-        dataTextView.isHidden = true
+        dataTextView.isHidden = false
         
         mainBackground.translatesAutoresizingMaskIntoConstraints = false
-        mainBackground.backgroundColor = .eagleColor
+        mainBackground.backgroundColor = .numoColor
         mainBackground.layer.cornerRadius = 5
         
         mainBackground.neumorphicLayer?.elementBackgroundColor = mainBackground.backgroundColor!.cgColor
@@ -127,36 +119,30 @@ extension BluetoothCell{
         // set convex or concave.
         mainBackground.neumorphicLayer?.depthType = .convex
         // set elementDepth (corresponds to shadowRadius). Default is 5
-        mainBackground.neumorphicLayer?.elementDepth = 5
+        mainBackground.neumorphicLayer?.elementDepth = 3
+        mainBackground.neumorphicLayer?.edged = true
+        
+        textViewBackground.translatesAutoresizingMaskIntoConstraints = false
+        textViewBackground.backgroundColor = .numoColor
+        textViewBackground.layer.cornerRadius = 10
+        
+        textViewBackground.neumorphicLayer?.elementBackgroundColor = textViewBackground.backgroundColor!.cgColor
+        textViewBackground.neumorphicLayer?.cornerRadius = 10
+        // set convex or concave.
+        textViewBackground.neumorphicLayer?.depthType = .concave
+        // set elementDepth (corresponds to shadowRadius). Default is 5
+        textViewBackground.neumorphicLayer?.elementDepth = 3
         
         
-        //mainBackground.clipsToBounds = true
-        //mainBackground.layer.masksToBounds = true
-        
-//        mainBackground.layer.shadowColor = UIColor.appColor.cgColor
-//        mainBackground.layer.shadowRadius = 5
-//        mainBackground.layer.shadowOffset = CGSize(width: 3, height: 3)
-//        mainBackground.layer.shadowRadius = 3
-//        mainBackground.layer.shadowOpacity = 1
-//        mainBackground.layer.shadowPath = UIBezierPath(roundedRect: mainBackground.bounds, byRoundingCorners: .allCorners, cornerRadii: CGSize(width: 8, height: 8)).cgPath
-//        mainBackground.layer.shouldRasterize = true
-//        mainBackground.layer.rasterizationScale = UIScreen.main.scale
-        
-    
         
         NumoButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
         NumoButton.tintColor = .blue
-        //NumoButton.setImage(UIImage(named: "heart-solid"), for: .selected)
-        //NumoButton.contentVerticalAlignment = .fill
-        //NumoButton.contentHorizontalAlignment = .fill
-        //NumoButton.imageEdgeInsets = UIEdgeInsets(top: 26, left: 24, bottom: 22, right: 24)
-        //NumoButton.addTarget(self, action: #selector(tapped(_:)), for: .touchUpInside)
         
-        NumoButton.neumorphicLayer?.elementBackgroundColor = UIColor.eagleColor.cgColor
+        NumoButton.neumorphicLayer?.elementBackgroundColor = UIColor.numoColor.cgColor
         NumoButton.translatesAutoresizingMaskIntoConstraints = false
         NumoButton.layer.cornerRadius = 20
         
-        backgroundColor = .eagleColor
+        backgroundColor = .numoColor
         
     }
     
@@ -176,18 +162,11 @@ extension BluetoothCell{
         
         contentView.addSubview(mainBackground)
         mainBackground.addSubview(topview)
-        mainBackground.addSubview(dataTextView)
-        //mainBackground.addSubview(connectImageView)
+        mainBackground.addSubview(textViewBackground)
         mainBackground.addSubview(NumoButton)
-        
         mainBackground.addSubview(connectView)
-        
-//        contentView.addSubview(topview)
-//        contentView.addSubview(dataTextView)
-//        contentView.addSubview(connectImageView)
-//        contentView.addSubview(connectView)
-        
-        
+        textViewBackground.addSubview(dataTextView)
+            
         topview.addSubview(localNameLabel)
         topview.addSubview(uuidLabel)
         topview.addSubview(RSSIImageView)
@@ -200,13 +179,6 @@ extension BluetoothCell{
             mainBackground.bottomAnchor.constraint(equalToSystemSpacingBelow: contentView.bottomAnchor, multiplier: -2)
         ])
         
-        
-//        NSLayoutConstraint.activate([
-//            mainBackground.topAnchor.constraint(equalTo: topview.topAnchor),
-//            mainBackground.leadingAnchor.constraint(equalTo: topview.leadingAnchor),
-//            mainBackground.trailingAnchor.constraint(equalTo: topview.trailingAnchor),
-//            //contentView.bottomAnchor.constraint(equalTo: topview.bottomAnchor)
-//        ])
         
         NSLayoutConstraint.activate([
             topview.topAnchor.constraint(equalTo: mainBackground.topAnchor),
@@ -236,14 +208,6 @@ extension BluetoothCell{
             uuidLabel.topAnchor.constraint(equalToSystemSpacingBelow: localNameLabel.bottomAnchor, multiplier: 0)
         ])
         
-        //connectImageView
-//        NSLayoutConstraint.activate([
-//            topview.trailingAnchor.constraint(equalToSystemSpacingAfter: connectImageView.trailingAnchor, multiplier: 1),
-//            connectImageView.topAnchor.constraint(equalToSystemSpacingBelow: topview.topAnchor, multiplier: 0),
-//            connectImageView.widthAnchor.constraint(equalToConstant: 50),
-//            connectImageView.heightAnchor.constraint(equalToConstant: 50),
-//
-//        ])
         
         NSLayoutConstraint.activate([
             topview.trailingAnchor.constraint(equalToSystemSpacingAfter: NumoButton.trailingAnchor, multiplier: 1),
@@ -279,34 +243,23 @@ extension BluetoothCell{
             NumoButton.leadingAnchor.constraint(equalToSystemSpacingAfter: RSSILabel.trailingAnchor, multiplier: 1),
         ])
         
+        
+        //textViewBackground
+        NSLayoutConstraint.activate([
+            textViewBackground.topAnchor.constraint(equalTo: topview.bottomAnchor),
+            textViewBackground.leadingAnchor.constraint(equalToSystemSpacingAfter: topview.leadingAnchor, multiplier: 1),
+            topview.trailingAnchor.constraint(equalToSystemSpacingAfter: textViewBackground.trailingAnchor, multiplier: 1),
+            mainBackground.bottomAnchor.constraint(equalToSystemSpacingBelow: textViewBackground.bottomAnchor, multiplier: 1)
+        ])
+        
         //dataTextView
         NSLayoutConstraint.activate([
-            dataTextView.topAnchor.constraint(equalTo: topview.bottomAnchor),
-            dataTextView.leadingAnchor.constraint(equalToSystemSpacingAfter: topview.leadingAnchor, multiplier: 1),
-            topview.trailingAnchor.constraint(equalToSystemSpacingAfter: dataTextView.trailingAnchor, multiplier: 1),
-            //dataTextView.heightAnchor.constraint(equalToConstant: 100)
-            dataTextView.bottomAnchor.constraint(equalTo: mainBackground.bottomAnchor)
+            dataTextView.topAnchor.constraint(equalTo: textViewBackground.topAnchor),
+            dataTextView.leadingAnchor.constraint(equalToSystemSpacingAfter: textViewBackground.leadingAnchor, multiplier: 1),
+            textViewBackground.trailingAnchor.constraint(equalToSystemSpacingAfter: dataTextView.trailingAnchor, multiplier: 1),
+            dataTextView.bottomAnchor.constraint(equalTo: textViewBackground.bottomAnchor)
         ])
+        
         
     }
 }
-
-class ShadowView: UIView {
-    override var bounds: CGRect {
-        didSet {
-            setupShadow()
-        }
-    }
-
-    private func setupShadow() {
-        self.layer.cornerRadius = 8
-        self.layer.shadowOffset = CGSize(width: 0, height: 0)
-        self.layer.shadowRadius = 3
-        self.layer.shadowOpacity = 0.5
-        self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: .allCorners, cornerRadii: CGSize(width: 8, height: 8)).cgPath
-        self.layer.shouldRasterize = true
-        self.layer.rasterizationScale = UIScreen.main.scale
-    }
-}
-
-

@@ -45,5 +45,10 @@ extension UIColor {
         return UIColor(named: "IceColor")!
     }
 
-    
+    class var wizardColor: UIColor {
+        return UIColor(named: "WizardGrayColor")!
+    }
+    class var numoColor: UIColor {
+        return UIColor(named: "NumoColor")!
+    }
 }
